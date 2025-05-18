@@ -1,0 +1,544 @@
+-- Tải Rayfield UI
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- Tạo cửa sổ
+local Window = Rayfield:CreateWindow({
+   Name = "🤯Kha Hub 3.0 Dead Rails🐧",
+   Icon = 10670510697,
+   LoadingTitle = "Loading....",
+   LoadingSubtitle = "by Sey_Roblox",
+   Theme = " green",
+   ConfigurationSaving = {
+      Enabled = false,
+      FolderName = "main",
+      FileName = "Kha Hub"
+   },
+})
+
+Rayfield:Notify({
+   Title = "Kha Hub 2.5 Loaded!",
+   Content = "Your hub are ready now!",
+   Duration = 5.5,
+   Image = 79191407851653,
+})
+
+Rayfield:Notify({
+   Title = "lời nhắn của sey_roblox",
+   Content = "Nhớ khen tui đẹp trai nha😟",
+   Duration = 5.5,
+   Image = 76118072590572,
+})
+
+--==[ Tab: Dead Rails ]==--
+local MainTab = Window:CreateTab("Dead Rails", 122874126897828)
+MainTab:CreateSection("Main Features")
+
+MainTab:CreateButton({
+   Name = "Null_Fire Script",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/InfernusScripts/Null-Fire/main/Loader"))()
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Infinite Yield",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+   end,
+})
+
+MainTab:CreateSlider({
+   Name = "WalkSpeed",
+   Range = {10, 100},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "WalkSpeedSlider",
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+   end,
+})
+
+-- ESP COAL
+local coalESPEnabled = false
+
+local function isCoal(part)
+    return part:IsA("BasePart") and part.Name == "Coal"
+end
+
+local function makeESP(part)
+    if part:FindFirstChild("CoalESP") then return end
+
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "CoalESP"
+    highlight.Adornee = part
+    highlight.FillColor = Color3.fromRGB(0, 255, 255)
+    highlight.OutlineColor = Color3.fromRGB(0, 100, 255)
+    highlight.FillTransparency = 0.2
+    highlight.OutlineTransparency = 0
+    highlight.Parent = part
+
+    local bb = Instance.new("BillboardGui", part)
+    bb.Name = "CoalESP"
+    bb.Adornee = part
+    bb.Size = UDim2.new(0, 60, 0, 20)
+    bb.StudsOffset = Vector3.new(0, 1.5, 0)
+    bb.AlwaysOnTop = true
+
+    local label = Instance.new("TextLabel", bb)
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.Text = "Coal"
+    label.BackgroundTransparency = 1
+    label.TextScaled = true
+    label.Font = Enum.Font.SourceSans
+    label.TextColor3 = Color3.fromRGB(0, 255, 255)
+end
+
+local function startCoalESP()
+    task.spawn(function()
+        while coalESPEnabled do
+            for _, v in ipairs(workspace:GetDescendants()) do
+                if isCoal(v) then
+                    makeESP(v)
+                end
+            end
+            task.wait(2)
+        end
+    end)
+end
+
+local function stopCoalESP()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:FindFirstChild("CoalESP") then
+            v:FindFirstChild("CoalESP"):Destroy()
+        end
+        if v:IsA("BillboardGui") and v.Name == "CoalESP" then
+            v:Destroy()
+        end
+    end
+end
+
+MainTab:CreateToggle({
+   Name = "ESP Coal",
+   CurrentValue = false,
+   Flag = "Toggle_CoalESP",
+   Callback = function(Value)
+       coalESPEnabled = Value
+       if Value then
+           startCoalESP()
+       else
+           stopCoalESP()
+       end
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Vehicle Fly",
+   Callback = function()
+      loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui'))()
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Bypass Anti-Cheat",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/AmareScripts/DeadRails/refs/heads/main/Bypass%25AntiCheat.lua"))()
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Free Horse Class",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/IncognitoScripts/DeadRails/refs/heads/main/HorseClass"))()
+   end,
+})
+
+--==[ Tab: Teleport Map ]==--
+local teleportTab = Window:CreateTab("💥Teleport Map", 76118072590572)
+teleportTab:CreateSection("Map Teleport")
+
+local teleportOptions = {
+    "Castle",
+    "Fort",
+    "Sterling Town",
+    "Tesla Lab"
+}
+
+local selectedTeleport = "Castle"
+
+teleportTab:CreateDropdown({
+    Name = "Select Location",
+    Options = teleportOptions,
+    CurrentOption = {selectedTeleport},
+    MultipleOptions = false,
+    Flag = "TeleportDropdown",
+    Callback = function(option)
+        selectedTeleport = option[1]
+    end,
+})
+
+teleportTab:CreateButton({
+    Name = "Teleport",
+    Callback = function()
+        if selectedTeleport == "Castle" then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/castletpfast.github.io/refs/heads/main/FASTCASTLE.lua"))()
+        elseif selectedTeleport == "Fort" then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/Tpfort.github.io/refs/heads/main/Tpfort.lua"))()
+        elseif selectedTeleport == "Sterling Town" then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/sterlingnotifcation.github.io/refs/heads/main/Sterling.lua"))()
+        elseif selectedTeleport == "Tesla Lab" then
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/tptotesla.github.io/refs/heads/main/Tptotesla.lua"))()
+        end
+    end,
+})
+
+local MiscTab = Window:CreateTab("🤓Misc", 4483362458)
+MiscTab:CreateSection("Misc script")
+MiscTab:CreateButton({
+   Name = "Tăng FPS",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/vexroxd/My-Script-/main/roblox%20fps%20unlocker%20script.lua"))()
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "npc lock",
+   Callback = function()
+      --dead rails wall hack aimbot.
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+player.CameraMode = Enum.CameraMode.Classic
+local runService = game:GetService("RunService")
+local StarterGui = game:GetService("StarterGui")
+local camera = workspace.CurrentCamera
+ 
+StarterGui:SetCore("SendNotification", {
+    Title = "Code by Sey_roblox", -- dont skid ðŸ™ðŸ’”
+    Text = "on Roblox",
+    Duration = 3
+})
+ 
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "NPC_Lock_GUI"
+screenGui.Parent = game:GetService("CoreGui")
+ 
+local button = Instance.new("TextButton")
+button.Name = "NPC Lock: ON/OFF"
+button.Size = UDim2.new(0, 160, 0, 55)
+button.Position = UDim2.new(0.5, -80, 0.9, -30)
+button.BackgroundColor3 = Color3.fromRGB(20, 80, 180)  -- màu xanh dương đẹp
+button.TextColor3 = Color3.fromRGB(240, 240, 255)       -- trắng sáng hơn
+button.Text = "NPC Lock: OFF"
+button.Font = Enum.Font.GothamBold
+button.TextScaled = true
+button.TextSize = 22
+button.TextStrokeColor3 = Color3.fromRGB(10, 30, 100)
+button.TextStrokeTransparency = 0.7
+button.Parent = screenGui
+ 
+local uicorner = Instance.new("UICorner")
+uicorner.CornerRadius = UDim.new(0, 16)
+uicorner.Parent = button
+ 
+local dragging = false
+local dragInput, dragStart, startPos
+ 
+local function update(input)
+    local delta = input.Position - dragStart
+    button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+ 
+button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = button.Position
+ 
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+ 
+button.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+ 
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        update(input)
+    end
+end)
+ 
+local npcLock = false
+local lastTarget = nil
+local toggleLoop
+ 
+local function addPlayerHighlight()
+    if player.Character then
+        local highlight = player.Character:FindFirstChild("PlayerHighlightESP")
+        if not highlight then
+            highlight = Instance.new("Highlight")
+            highlight.Name = "PlayerHighlightESP"
+            highlight.FillColor = Color3.new(1, 1, 1)
+            highlight.OutlineColor = Color3.new(1, 1, 1)
+            highlight.FillTransparency = 0.5
+            highlight.OutlineTransparency = 0
+            highlight.Parent = player.Character
+        end
+    end
+end
+ 
+local function removePlayerHighlight()
+    if player.Character and player.Character:FindFirstChild("PlayerHighlightESP") then
+        player.Character.PlayerHighlightESP:Destroy()
+    end
+end
+ 
+local function getClosestNPC()
+    local closestNPC = nil
+    local closestDistance = math.huge
+ 
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("Model") then
+            local humanoid = object:FindFirstChild("Humanoid") or object:FindFirstChildWhichIsA("Humanoid")
+            local hrp = object:FindFirstChild("HumanoidRootPart") or object.PrimaryPart
+            if humanoid and hrp and humanoid.Health > 0 and object.Name ~= "Horse" then
+                local isPlayer = false
+                for _, pl in ipairs(Players:GetPlayers()) do
+                    if pl.Character == object then
+                        isPlayer = true
+                        break
+                    end
+                end
+                if not isPlayer then
+                    local distance = (hrp.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                    if distance < closestDistance then
+                        closestDistance = distance
+                        closestNPC = object
+                    end
+                end
+            end
+        end
+    end
+ 
+    return closestNPC
+end
+ 
+button.MouseButton1Click:Connect(function()
+    npcLock = not npcLock
+    if npcLock then
+        button.Text = "NPC Lock: ON"
+        toggleLoop = runService.RenderStepped:Connect(function()
+            local npc = getClosestNPC()
+            if npc and npc:FindFirstChild("Humanoid") then
+                local npcHumanoid = npc:FindFirstChild("Humanoid")
+                if npcHumanoid.Health > 0 then
+                    camera.CameraSubject = npcHumanoid
+                    lastTarget = npc
+                    addPlayerHighlight()
+                else
+                    StarterGui:SetCore("SendNotification", {
+                        Title = "Killed NPC",
+                        Text = npc.Name,
+                        Duration = 0.4
+                    })
+                    lastTarget = nil
+                    removePlayerHighlight()
+                    if player.Character and player.Character:FindFirstChild("Humanoid") then
+                        camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+                    end
+                end
+            else
+                if player.Character and player.Character:FindFirstChild("Humanoid") then
+                    camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+                end
+                lastTarget = nil
+                removePlayerHighlight()
+            end
+        end)
+    else
+        button.Text = "NPC Lock: OFF"
+        if toggleLoop then
+            toggleLoop:Disconnect()
+            toggleLoop = nil
+        end
+        removePlayerHighlight()
+        if player.Character and player.Character:FindFirstChild("Humanoid") then
+            camera.CameraSubject = player.Character:FindFirstChild("Humanoid")
+        end
+    end
+end)
+   end,
+})
+
+MiscTab:CreateSlider({
+   Name = "Jump Power",
+   Range = {1, 200},
+   Increment = 1,
+   Suffix = "JP",
+   CurrentValue = 50,
+   Flag = "JumpPowerSlider",
+   Callback = function(Value)
+      game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "Fly GUI V3",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "🤡Auto bonds vip pro🤡",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/WawesDEV/master-lua-script/refs/heads/main/DeadRails/AutoWin/RailsScript%2520%2510.lua"))()
+   end,
+})
+
+local InfiniteJumpEnabled = false
+
+MiscTab:CreateToggle({
+   Name = "Infinite Jump",
+   CurrentValue = false,
+   Flag = "InfiniteJumpToggle",
+   Callback = function(Value)
+      InfiniteJumpEnabled = Value
+   end,
+})
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+   if InfiniteJumpEnabled then
+      local player = game:GetService("Players").LocalPlayer
+      if player and player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+         player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+      end
+   end
+end)
+
+local espEnabled = false
+local rays = {}
+
+function createESP(player)
+    if player == game.Players.LocalPlayer then return end
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local char = player.Character
+
+        -- Highlight
+        if not char:FindFirstChild("ESPBox") then
+            local highlight = Instance.new("Highlight")
+            highlight.Name = "ESPBox"
+            highlight.Adornee = char
+            highlight.FillColor = Color3.fromRGB(0, 170, 255)
+            highlight.FillTransparency = 0.2
+            highlight.OutlineColor = Color3.fromRGB(0, 255, 255)
+            highlight.Parent = char
+        end
+
+        -- Billboard (name)
+        if not char:FindFirstChild("ESPGui") then
+            local bill = Instance.new("BillboardGui")
+            bill.Name = "ESPGui"
+            bill.Size = UDim2.new(0, 100, 0, 20)
+            bill.StudsOffset = Vector3.new(0, 3, 0)
+            bill.Adornee = char:WaitForChild("Head")
+            bill.AlwaysOnTop = true
+            bill.Parent = char
+
+            local text = Instance.new("TextLabel", bill)
+            text.Size = UDim2.new(1, 0, 1, 0)
+            text.Text = player.Name
+            text.TextScaled = true
+            text.Font = Enum.Font.SourceSansBold
+            text.TextColor3 = Color3.fromRGB(0, 170, 255)
+            text.BackgroundTransparency = 1
+        end
+
+        -- Beam / Ray
+        if not rays[player] then
+            local a = Instance.new("Attachment", workspace.CurrentCamera)
+            local b = Instance.new("Attachment", char:WaitForChild("HumanoidRootPart"))
+
+            local beam = Instance.new("Beam")
+            beam.Attachment0 = a
+            beam.Attachment1 = b
+            beam.FaceCamera = true
+            beam.Width0 = 0.1
+            beam.Width1 = 0.1
+            beam.Color = ColorSequence.new(Color3.fromRGB(0, 200, 255))
+            beam.Transparency = NumberSequence.new(0.2)
+            beam.Parent = a
+
+            rays[player] = {a, b, beam}
+        end
+    end
+end
+
+function clearESP()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character then
+            if player.Character:FindFirstChild("ESPBox") then
+                player.Character.ESPBox:Destroy()
+            end
+            if player.Character:FindFirstChild("ESPGui") then
+                player.Character.ESPGui:Destroy()
+            end
+        end
+    end
+    for _, ray in pairs(rays) do
+        for _, v in pairs(ray) do
+            if v and v.Parent then v:Destroy() end
+        end
+    end
+    rays = {}
+end
+
+function updateESP()
+    while espEnabled do
+        for _, player in pairs(game.Players:GetPlayers()) do
+            pcall(function()
+                if player ~= game.Players.LocalPlayer then
+                    createESP(player)
+                end
+            end)
+        end
+        task.wait(1)
+    end
+end
+
+-- Toggle trong GUI
+MiscTab:CreateToggle({
+   Name = "ESP Người chơi",
+   CurrentValue = false,
+   Flag = "Toggle_PlayerESP",
+   Callback = function(Value)
+       espEnabled = Value
+       if espEnabled then
+           updateESP()
+       else
+           clearESP()
+       end
+   end,
+})
+
+MiscTab:CreateButton({
+   Name = "auto farm bonds",
+   Callback = function()
+getgenv().BondFarmSetting = {
+    tweenDuration = 18, -- The lower it goes, the faster you teleport, Best is 15-18.
+    AutoExecute = true,
+    CheckMissedBonds = true,
+    WebhookUrl = "URL_HERE",
+    autoSHOPDelay = 70 -- How long it will wait to make you server hop, avoid stuck.
+}
+EnabledScript = true
+SaveNewSettings = true
+loadstring(game:HttpGet("https://raw.githubusercontent.com/DonjoScripts/Public-Scripts/refs/heads/Slap-Battles/Deadrails_Obfucasted_19839292790.lua"))()
+   end,
+})
