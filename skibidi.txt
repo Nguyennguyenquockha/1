@@ -1,7 +1,5 @@
--- Tải Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Tạo cửa sổ
 local Window = Rayfield:CreateWindow({
    Name = "🤯Kha Hub 3.0 Dead Rails🐧",
    Icon = 10670510697,
@@ -541,4 +539,140 @@ EnabledScript = true
 SaveNewSettings = true
 loadstring(game:HttpGet("https://raw.githubusercontent.com/DonjoScripts/Public-Scripts/refs/heads/Slap-Battles/Deadrails_Obfucasted_19839292790.lua"))()
    end,
+})
+
+local ForsakenTab = Window:CreateTab(" Forsaken", 96841470461521)
+ForsakenTab:CreateSection("Forsaken's main")
+local killerESPEnabled = false
+
+local killerFolder = Instance.new("Folder")
+killerFolder.Name = "ESP_Killers"
+killerFolder.Parent = game.CoreGui
+
+local function clearKillerESP()
+	for _, v in pairs(killerFolder:GetChildren()) do
+		v:Destroy()
+	end
+end
+
+local function isKiller(player)
+	-- Sửa lại logic nếu game có cách khác xác định Killer
+	if player:FindFirstChild("Role") and player.Role.Value == "Killer" then
+		return true
+	end
+	return false
+end
+
+local function createKillerESP()
+	clearKillerESP()
+	for _, player in pairs(game.Players:GetPlayers()) do
+		if player ~= game.Players.LocalPlayer and isKiller(player) then
+			local char = player.Character
+			if char and char:FindFirstChild("HumanoidRootPart") then
+				local hrp = char.HumanoidRootPart
+
+				-- Aura (Box)
+				local box = Instance.new("BoxHandleAdornment")
+				box.Name = "KillerESP"
+				box.Adornee = hrp
+				box.AlwaysOnTop = true
+				box.ZIndex = 10
+				box.Size = Vector3.new(4, 6, 2)
+				box.Color3 = Color3.fromRGB(255, 0, 0)
+				box.Transparency = 0.4
+				box.Parent = killerFolder
+
+				-- Tracer
+				local tracer = Instance.new("Beam")
+				local a0 = Instance.new("Attachment", hrp)
+				local a1 = Instance.new("Attachment", workspace.CurrentCamera)
+				tracer.Attachment0 = a0
+				tracer.Attachment1 = a1
+				tracer.FaceCamera = true
+				tracer.Width0 = 0.1
+				tracer.Width1 = 0.1
+				tracer.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+				tracer.Transparency = NumberSequence.new(0.2)
+				tracer.Parent = killerFolder
+			end
+		end
+	end
+end
+
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if killerESPEnabled then
+			createKillerESP()
+		else
+			clearKillerESP()
+		end
+	end
+end)
+
+-- Toggle Rayfield
+Tab:CreateToggle({
+	Name = "ESP Killer",
+	CurrentValue = false,
+	Flag = "ESPKiller",
+	Callback = function(Value)
+		killerESPEnabled = Value
+	end,
+})
+
+local GenESPEnabled = false
+
+-- Tạo folder chứa ESP
+local generatorFolder = Instance.new("Folder")
+generatorFolder.Name = "ESP_Generators"
+generatorFolder.Parent = game.CoreGui
+
+-- Xóa tất cả ESP cũ
+local function clearGeneratorESP()
+	for _, v in pairs(generatorFolder:GetChildren()) do
+		v:Destroy()
+	end
+end
+
+-- Tạo ESP cho tất cả Generator
+local function createGeneratorESP()
+	clearGeneratorESP()
+	for _, model in pairs(workspace:GetDescendants()) do
+		if model:IsA("Model") and model.Name:lower():find("generator") then
+			local part = model:FindFirstChildWhichIsA("BasePart")
+			if part then
+				local esp = Instance.new("BoxHandleAdornment")
+				esp.Name = "GeneratorESP"
+				esp.Adornee = part
+				esp.AlwaysOnTop = true
+				esp.ZIndex = 10
+				esp.Size = part.Size + Vector3.new(0.1, 0.1, 0.1)
+				esp.Color3 = Color3.fromRGB(255, 255, 0)
+				esp.Transparency = 0.4
+				esp.Parent = generatorFolder
+			end
+		end
+	end
+end
+
+-- Vòng lặp kiểm tra bật tắt
+task.spawn(function()
+	while true do
+		task.wait(1)
+		if GenESPEnabled then
+			createGeneratorESP()
+		else
+			clearGeneratorESP()
+		end
+	end
+end)
+
+-- Toggle Rayfield
+Tab:CreateToggle({
+	Name = "ESP Generator",
+	CurrentValue = false,
+	Flag = "ESPGenerator",
+	Callback = function(Value)
+		GenESPEnabled = Value
+	end,
 })
