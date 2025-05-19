@@ -38,6 +38,13 @@ MainTab:CreateButton({
    end,
 })
 
+MainTab:CreateButton({
+   Name = "Aimbot NPC (monster) ",
+   Callback = function()
+     loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/full.txt'))()
+   end,
+})
+
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
 ESP.Boxes = true
@@ -329,7 +336,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/DonjoScripts/Public-S
 local OtherTab = Window:CreateTab("More", 12655175600)
 OtherTab:CreateSection("other script")
 OtherTab:CreateButton({
-   Name = "Aimbot by AI🤡",
+   Name = "Aimbot player by AI🤡",
    Callback = function()
       loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/Ch.txt'))()
    end,
