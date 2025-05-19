@@ -1,0 +1,116 @@
+-- Dead Rails Aimbot với GUI và nhắm trung tâm màn hình
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local aimRadius = 150
+local aiming = false
+
+-- GUI
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "AimbotGui"
+
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 200, 0, 150)
+main.Position = UDim2.new(0.02, 0, 0.4, 0)
+main.BackgroundColor3 = Color3.fromRGB(30, 30, 80)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 12)
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Text = "Aimbot Menu"
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+
+local toggle = Instance.new("TextButton", main)
+toggle.Size = UDim2.new(0.8, 0, 0, 30)
+toggle.Position = UDim2.new(0.1, 0, 0.3, 0)
+toggle.Text = "Aimbot: OFF"
+toggle.BackgroundColor3 = Color3.fromRGB(100, 100, 220)
+toggle.TextColor3 = Color3.new(1, 1, 1)
+toggle.Font = Enum.Font.Gotham
+toggle.TextSize = 16
+Instance.new("UICorner", toggle)
+
+local minus = Instance.new("TextButton", main)
+minus.Size = UDim2.new(0.3, -5, 0, 30)
+minus.Position = UDim2.new(0.1, 0, 0.65, 0)
+minus.Text = "-"
+minus.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+minus.TextColor3 = Color3.new(1, 1, 1)
+minus.Font = Enum.Font.GothamBold
+minus.TextSize = 20
+Instance.new("UICorner", minus)
+
+local plus = Instance.new("TextButton", main)
+plus.Size = UDim2.new(0.3, -5, 0, 30)
+plus.Position = UDim2.new(0.6, 0, 0.65, 0)
+plus.Text = "+"
+plus.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+plus.TextColor3 = Color3.new(1, 1, 1)
+plus.Font = Enum.Font.GothamBold
+plus.TextSize = 20
+Instance.new("UICorner", plus)
+
+toggle.MouseButton1Click:Connect(function()
+	aiming = not aiming
+	toggle.Text = aiming and "Aimbot: ON" or "Aimbot: OFF"
+	toggle.BackgroundColor3 = aiming and Color3.fromRGB(40, 200, 100) or Color3.fromRGB(100, 100, 220)
+end)
+
+plus.MouseButton1Click:Connect(function()
+	aimRadius = aimRadius + 25
+end)
+
+minus.MouseButton1Click:Connect(function()
+	aimRadius = math.max(25, aimRadius - 25)
+end)
+
+-- Vòng tròn nhắm
+local aimCircle = Drawing.new("Circle")
+aimCircle.Color = Color3.fromRGB(255, 0, 0)
+aimCircle.Thickness = 2
+aimCircle.Transparency = 0.6
+aimCircle.Filled = false
+
+RunService.RenderStepped:Connect(function()
+	local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+	aimCircle.Position = screenCenter
+	aimCircle.Radius = aimRadius
+	aimCircle.Visible = aiming
+end)
+
+-- Tìm đối tượng gần trung tâm nhất trong phạm vi
+local function getClosestTarget()
+	local closest = nil
+	local shortest = aimRadius
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+			local headPos, onScreen = Camera:WorldToViewportPoint(player.Character.Head.Position)
+			if onScreen then
+				local distance = (Vector2.new(headPos.X, headPos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+				if distance <= shortest then
+					shortest = distance
+					closest = player
+				end
+			end
+		end
+	end
+	return closest
+end
+
+-- Tự động xoay camera vào trung tâm Head của người gần nhất
+RunService.RenderStepped:Connect(function()
+	if aiming then
+		local target = getClosestTarget()
+		if target and target.Character and target.Character:FindFirstChild("Head") then
+			local targetPos = target.Character.Head.Position
+			Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPos)
+		end
+	end
+end)
