@@ -47,7 +47,7 @@ MainTab:CreateButton({
 
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
-ESP.Boxes = true
+ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
@@ -58,9 +58,40 @@ ESP:AddObjectListener(workspace.RuntimeItems, {
     IsEnabled = "CoalESPEnabled"
 })
 
+local Toggle = MainTab:CreateToggle({
+    Name = "ESP Coal",
+    CurrentValue = false,
+    Flag = "ToggleCoalESP",
+    Callback = function(state)
+        ESP.CoalESPEnabled = state
+    end
+})
+
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
-ESP.Boxes = true
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Bandage",
+    CustomName = "băng gạt",
+    Color = Color3.fromRGB(238, 106, 167),
+    IsEnabled = "BandageSPEnabled"
+})
+
+local Toggle = MainTab:CreateToggle({
+    Name = "ESP Bandages (khi bạn cần) ",
+    CurrentValue = false,
+    Flag = "ToggleBandageESP",
+    Callback = function(state)
+        ESP.BandageESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
@@ -89,7 +120,7 @@ MainTab:CreateButton({
 
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
-ESP.Boxes = true
+ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
@@ -107,13 +138,6 @@ local Toggle = MainTab:CreateToggle({
     Callback = function(state)
         ESP.GoldbarESPEnabled = state
     end
-})
-
-MainTab:CreateButton({
-   Name = "Vehicle Fly",
-   Callback = function()
-      loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui'))()
-   end,
 })
 
 MainTab:CreateButton({
@@ -183,6 +207,42 @@ MiscTab:CreateButton({
    Callback = function()
       loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
    end,
+})
+
+local Lighting = game:GetService("Lighting")
+local fullbrightEnabled = false
+local fullbrightLoop = nil
+local oldLightingSettings = {}
+
+MiscTab:CreateToggle({
+    Name = "Full Bright nâng cao",
+    CurrentValue = false,
+    Callback = function(Value)
+        fullbrightEnabled = Value
+        if Value then
+            -- Lưu ánh sáng gốc
+            oldLightingSettings.Brightness = Lighting.Brightness
+            oldLightingSettings.ClockTime = Lighting.ClockTime
+            oldLightingSettings.FogEnd = Lighting.FogEnd
+            oldLightingSettings.GlobalShadows = Lighting.GlobalShadows
+            oldLightingSettings.OutdoorAmbient = Lighting.OutdoorAmbient
+
+            -- Vòng lặp duy trì full bright
+            fullbrightLoop = game:GetService("RunService").RenderStepped:Connect(function()
+                Lighting.Brightness = 2
+                Lighting.ClockTime = 14
+                Lighting.FogEnd = 100000
+                Lighting.GlobalShadows = false
+                Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+            end)
+        else
+            -- Tắt full bright
+            if fullbrightLoop then fullbrightLoop:Disconnect() end
+            for setting, value in pairs(oldLightingSettings) do
+                Lighting[setting] = value
+            end
+        end
+    end,
 })
 
 MiscTab:CreateButton({
