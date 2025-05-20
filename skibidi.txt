@@ -13,9 +13,13 @@ local Window = Rayfield:CreateWindow({
    },
 })
 
+--==[ Tab: Dead Rails ]==--
+local MainTab = Window:CreateTab("Dead Rails", 122874126897828)
+MainTab:CreateSection("Main Features")
+
 Rayfield:Notify({
    Title = "Kha Hub 2.5 Loaded!",
-   Content = "Your hub are ready now!",
+   Content = "Script/code by sey_roblox!",
    Duration = 5.5,
    Image = 79191407851653,
 })
@@ -23,13 +27,9 @@ Rayfield:Notify({
 Rayfield:Notify({
    Title = "lời nhắn của sey_roblox",
    Content = "cái này làm ko đơn giản hiểu chx mấy og:)",
-   Duration = 5.5,
+   Duration = 5,
    Image = 76118072590572,
 })
-
---==[ Tab: Dead Rails ]==--
-local MainTab = Window:CreateTab("Dead Rails", 122874126897828)
-MainTab:CreateSection("Main Features")
 
 MainTab:CreateButton({
    Name = "Null_Fire Script",
@@ -45,6 +45,30 @@ MainTab:CreateButton({
    end,
 })
 
+MainTab:CreateButton({
+   Name = "Vehicle Fly",
+   Callback = function()
+      loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui'))()
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Bypass Anti-Cheat",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/AmareScripts/DeadRails/refs/heads/main/Bypass%25AntiCheat.lua"))()
+   end,
+})
+
+MainTab:CreateButton({
+   Name = "Auto swing(đánh) OP",
+   Callback = function()
+      loadstring(game:HttpGet("https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/OPAUTOSWINGV2"))()
+   end,
+})
+
+local VisualTab = Window:CreateTab("Visual🤔", 124285276508951)
+VisualTab:CreateSection("Esp items")
+
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
 ESP.Boxes = false
@@ -58,7 +82,7 @@ ESP:AddObjectListener(workspace.RuntimeItems, {
     IsEnabled = "CoalESPEnabled"
 })
 
-local Toggle = MainTab:CreateToggle({
+local Toggle = VisualTab:CreateToggle({
     Name = "ESP Coal",
     CurrentValue = false,
     Flag = "ToggleCoalESP",
@@ -73,19 +97,26 @@ ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
+-- Biến bật/tắt ESP cho Bandage
+local BandageESPEnabled = false
+
+-- Theo dõi Bandage trong workspace.RuntimeItems
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "Bandage",
-    CustomName = "băng gạt",
+    CustomName = "Bandage",
     Color = Color3.fromRGB(238, 106, 167),
-    IsEnabled = "BandageSPEnabled"
+    PrimaryPart = "Handle", -- Vẽ ESP đúng vị trí Handle
+    IsEnabled = function(obj)
+        return BandageESPEnabled
+    end
 })
 
-local Toggle = MainTab:CreateToggle({
-    Name = "ESP Bandages (khi bạn cần) ",
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Bandage (khi bạn cần)",
     CurrentValue = false,
     Flag = "ToggleBandageESP",
     Callback = function(state)
-        ESP.BandageESPEnabled = state
+        BandageESPEnabled = state
     end
 })
 
@@ -102,20 +133,13 @@ ESP:AddObjectListener(workspace.RuntimeItems, {
     IsEnabled = "NewspaperESPEnabled"
 })
 
-local Toggle = MainTab:CreateToggle({
+local Toggle = VisualTab:CreateToggle({
     Name = "ESP Newspaper",
     CurrentValue = false,
     Flag = "ToggleNewspaperESP",
     Callback = function(state)
         ESP.NewspaperESPEnabled = state
     end
-})
-
-MainTab:CreateButton({
-   Name = "Vehicle Fly",
-   Callback = function()
-      loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui'))()
-   end,
 })
 
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
@@ -140,18 +164,42 @@ local Toggle = MainTab:CreateToggle({
     end
 })
 
-MainTab:CreateButton({
-   Name = "Bypass Anti-Cheat",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/AmareScripts/DeadRails/refs/heads/main/Bypass%25AntiCheat.lua"))()
-   end,
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "BarbedWire",
+    CustomName = "rào sắt",
+    Color = Color3.fromRGB(128, 128, 128),
+    IsEnabled = "BarbedwireESPEnabled"
 })
 
-MainTab:CreateButton({
-   Name = "Auto swing(đánh) OP",
-   Callback = function()
-      loadstring(game:HttpGet("https://raw.githubusercontent.com/HeadHarse/Dusty/refs/heads/main/OPAUTOSWINGV2"))()
-   end,
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP barbedwire",
+    CurrentValue = false,
+    Flag = "ToggleBarbedwireESP",
+    Callback = function(state)
+        ESP.BarbedwireESPEnabled = state
+    end
+})
+
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "SilverBar",
+    CustomName = "sắt",
+    Color = Color3.fromRGB(192, 192, 192),
+    IsEnabled = "SilverBarESPEnabled"
+})
+
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP sắt:0",
+    CurrentValue = false,
+    Flag = "ToggleSilverESP",
+    Callback = function(state)
+        ESP.SilverBarESPEnabled = state
+    end
 })
 
 --==[ Tab: Teleport Map ]==--
