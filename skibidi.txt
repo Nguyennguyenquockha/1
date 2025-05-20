@@ -148,6 +148,36 @@ ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
+-- Biến bật/tắt ESP Navy Revolver
+local NavyESPEnabled = false
+
+-- Theo dõi Navy Revolver
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Navy Revolver",
+    CustomName = "Navy Revolver",
+    Color = Color3.fromRGB(198, 226, 255),
+    PrimaryPart = "Handle",
+    IsEnabled = function(obj)
+        return NavyESPEnabled
+    end
+})
+
+-- Toggle ESP Navy Revolver
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Navy Revolver",
+    CurrentValue = false,
+    Flag = "ToggleNavyESP",
+    Callback = function(state)
+        NavyESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "GoldBar",
     CustomName = "vàng",
@@ -173,7 +203,7 @@ ESP:Toggle(true)
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "Bond",
     CustomName = "Bond",
-    Color = Color3.fromRGB(255, 255, 0),
+    Color = Color3.fromRGB(244, 164, 96),
     IsEnabled = "BondsESPEnabled"
 })
 
@@ -221,6 +251,33 @@ local Toggle = VisualTab:CreateToggle({
     Flag = "ToggleSilverESP",
     Callback = function(state)
         ESP.SilverBarESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+local BanjoESPEnabled = false
+
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Banjo",
+    CustomName = "Banjo",
+    Color = Color3.fromRGB(238, 207, 161),
+    PrimaryPart = "Handle",
+    IsEnabled = function(obj)
+        return BanjoESPEnabled
+    end
+})
+
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Banjo (nhạc cụ)",
+    CurrentValue = false,
+    Flag = "ToggleBanjoESP",
+    Callback = function(state)
+        BanjoESPEnabled = state
     end
 })
 
