@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "🤯Kha Hub 3.5 Dead Rails🐧",
+   Name = "🤯Kha Hub 3.7 Dead Rails🐧",
    Icon = 10670510697,
    LoadingTitle = "Loading....",
    LoadingSubtitle = "by Sey_Roblox",
@@ -26,7 +26,7 @@ Rayfield:Notify({
 
 Rayfield:Notify({
    Title = "lời nhắn của sey_roblox",
-   Content = "cái này làm ko đơn giản hiểu chx mấy og:)",
+   Content = "Cảm ơn đã dùng script của tui:)",
    Duration = 5,
    Image = 76118072590572,
 })
@@ -155,12 +155,34 @@ ESP:AddObjectListener(workspace.RuntimeItems, {
     IsEnabled = "GoldbarESPEnabled"
 })
 
-local Toggle = MainTab:CreateToggle({
+local Toggle = VisualTab:CreateToggle({
     Name = "ESP vàng🤑",
     CurrentValue = false,
     Flag = "ToggleGoldbarESP",
     Callback = function(state)
         ESP.GoldbarESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Bond",
+    CustomName = "Bond",
+    Color = Color3.fromRGB(255, 255, 0),
+    IsEnabled = "BondsESPEnabled"
+})
+
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Bond🤯",
+    CurrentValue = false,
+    Flag = "ToggleBondESP",
+    Callback = function(state)
+        ESP.BondsESPEnabled = state
     end
 })
 
