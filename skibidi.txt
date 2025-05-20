@@ -260,6 +260,36 @@ ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
+-- Biến bật/tắt ESP Saddle
+local SaddleESPEnabled = false
+
+-- Theo dõi Saddle
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Saddle",
+    CustomName = "Saddle",
+    Color = Color3.fromRGB(210, 105, 30), -- nâu cam nhẹ (hoặc bạn đổi thành màu nào cũng được)
+    PrimaryPart = "MeshPart",
+    IsEnabled = function(obj)
+        return SaddleESPEnabled
+    end
+})
+
+-- Toggle ESP Saddle
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Saddle",
+    CurrentValue = false,
+    Flag = "ToggleSaddleESP",
+    Callback = function(state)
+        SaddleESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
 local BanjoESPEnabled = false
 
 ESP:AddObjectListener(workspace.RuntimeItems, {
@@ -278,6 +308,68 @@ local Toggle = VisualTab:CreateToggle({
     Flag = "ToggleBanjoESP",
     Callback = function(state)
         BanjoESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+-- Biến bật/tắt ESP Unicorn
+local UnicornESPEnabled = false
+
+-- Theo dõi Unicorn
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Model_Unicorn",
+    CustomName = "Unicorn",
+    Color = Color3.fromRGB(255, 105, 180), -- màu hồng
+    PrimaryPart = "Saddle",
+    IsEnabled = function(obj)
+        return UnicornESPEnabled
+    end
+})
+
+-- Toggle ESP Unicorn
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Unicorn🤯",
+    CurrentValue = false,
+    Flag = "ToggleUnicornESP",
+    Callback = function(state)
+        UnicornESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+-- Biến bật/tắt ESP zombie
+local ZombieESPEnabled = false
+
+-- Theo dõi các NPC có "zombie" trong tên
+ESP:AddObjectListener(workspace, {
+    Type = "Model",
+    CustomName = function(obj)
+        return obj.Name
+    end,
+    Color = Color3.fromRGB(0, 255, 0), -- màu xanh lá
+    PrimaryPart = "HumanoidRootPart",
+    IsEnabled = function(obj)
+        return ZombieESPEnabled and string.lower(obj.Name):find("zombie")
+    end
+})
+
+-- Toggle ESP zombie
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Monster (bản test v1) ",
+    CurrentValue = false,
+    Flag = "ToggleZombieESP",
+    Callback = function(state)
+        ZombieESPEnabled = state
     end
 })
 
