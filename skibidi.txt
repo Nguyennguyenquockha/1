@@ -347,29 +347,27 @@ ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
--- Biến bật/tắt ESP zombie
-local ZombieESPEnabled = false
+-- Biến bật/tắt ESP Monster
+local MonsterESPEnabled = false
 
--- Theo dõi các NPC có "zombie" trong tên
-ESP:AddObjectListener(workspace, {
-    Type = "Model",
-    CustomName = function(obj)
-        return obj.Name
-    end,
-    Color = Color3.fromRGB(0, 255, 0), -- màu xanh lá
-    PrimaryPart = "HumanoidRootPart",
+-- Thêm ESP cho Model_Runner
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Model_Runner",
+    CustomName = "Monster",
+    Color = Color3.fromRGB(255, 0, 0), -- Màu đỏ
+    PrimaryPart = "Torso",
     IsEnabled = function(obj)
-        return ZombieESPEnabled and string.lower(obj.Name):find("zombie")
+        return MonsterESPEnabled
     end
 })
 
--- Toggle ESP zombie
+-- Toggle UI
 local Toggle = VisualTab:CreateToggle({
-    Name = "ESP Monster (bản test v1) ",
+    Name = "ESP Monster (bản test v1)",
     CurrentValue = false,
-    Flag = "ToggleZombieESP",
+    Flag = "ToggleMonsterESP",
     Callback = function(state)
-        ZombieESPEnabled = state
+        MonsterESPEnabled = state
     end
 })
 
