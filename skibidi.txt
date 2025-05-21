@@ -5,7 +5,7 @@ local Window = Rayfield:CreateWindow({
    Icon = 10670510697,
    LoadingTitle = "Loading....",
    LoadingSubtitle = "by Sey_Roblox",
-   Theme = "DarkBlue",
+   Theme = "Serenity",
    ConfigurationSaving = {
       Enabled = false,
       FolderName = "main",
@@ -21,13 +21,6 @@ Rayfield:Notify({
    Content = "Script/code by sey_roblox!",
    Duration = 5.5,
    Image = 79191407851653,
-})
-
-Rayfield:Notify({
-   Title = "lời nhắn của sey_roblox",
-   Content = "Cảm ơn đã dùng script của tui:)",
-   Duration = 5,
-   Image = 76118072590572,
 })
 
 MainTab:CreateButton({
@@ -96,10 +89,8 @@ ESP.Boxes = false
 ESP.Names = true
 ESP:Toggle(true)
 
--- Biến bật/tắt ESP cho Bandage
 local BandageESPEnabled = false
 
--- Theo dõi Bandage trong workspace.RuntimeItems
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "Bandage",
     CustomName = "Bandage",
@@ -111,7 +102,7 @@ ESP:AddObjectListener(workspace.RuntimeItems, {
 })
 
 local Toggle = VisualTab:CreateToggle({
-    Name = "ESP Bandage (khi bạn cần)",
+    Name = "ESP Bandage",
     CurrentValue = false,
     Flag = "ToggleBandageESP",
     Callback = function(state)
@@ -130,7 +121,7 @@ local SnakeOilESPEnabled = false
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "Snake Oil",
     CustomName = "Snake Oil",
-    Color = Color3.fromRGB(0, 160, 0), -- Xanh lá đậm
+    Color = Color3.fromRGB(0, 160, 0), 
     PrimaryPart = "Bottle",
     IsEnabled = function(obj)
         return SnakeOilESPEnabled
@@ -293,7 +284,7 @@ local SaddleESPEnabled = false
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "Saddle",
     CustomName = "Saddle",
-    Color = Color3.fromRGB(210, 105, 30), -- nâu cam nhẹ (hoặc bạn đổi thành màu nào cũng được)
+    Color = Color3.fromRGB(210, 105, 30), 
     PrimaryPart = "MeshPart",
     IsEnabled = function(obj)
         return SaddleESPEnabled
@@ -350,7 +341,7 @@ local UnicornESPEnabled = false
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "Model_Unicorn",
     CustomName = "Unicorn",
-    Color = Color3.fromRGB(255, 105, 180), -- màu hồng
+    Color = Color3.fromRGB(255, 105, 180),
     PrimaryPart = "Saddle",
     IsEnabled = function(obj)
         return UnicornESPEnabled
@@ -421,7 +412,6 @@ local Toggle = VisualTab:CreateToggle({
     end
 })
 
---==[ Tab: Teleport Map ]==--
 local teleportTab = Window:CreateTab("💥Teleport Map", 76118072590572)
 teleportTab:CreateSection("Map Teleport")
 
@@ -487,14 +477,12 @@ MiscTab:CreateToggle({
     Callback = function(Value)
         fullbrightEnabled = Value
         if Value then
-            -- Lưu ánh sáng gốc
             oldLightingSettings.Brightness = Lighting.Brightness
             oldLightingSettings.ClockTime = Lighting.ClockTime
             oldLightingSettings.FogEnd = Lighting.FogEnd
             oldLightingSettings.GlobalShadows = Lighting.GlobalShadows
             oldLightingSettings.OutdoorAmbient = Lighting.OutdoorAmbient
 
-            -- Vòng lặp duy trì full bright
             fullbrightLoop = game:GetService("RunService").RenderStepped:Connect(function()
                 Lighting.Brightness = 2
                 Lighting.ClockTime = 14
@@ -503,7 +491,6 @@ MiscTab:CreateToggle({
                 Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
             end)
         else
-            -- Tắt full bright
             if fullbrightLoop then fullbrightLoop:Disconnect() end
             for setting, value in pairs(oldLightingSettings) do
                 Lighting[setting] = value
@@ -558,7 +545,6 @@ function createESP(player)
             highlight.Parent = char
         end
 
-        -- Billboard (name)
         if not char:FindFirstChild("ESPGui") then
             local bill = Instance.new("BillboardGui")
             bill.Name = "ESPGui"
@@ -577,7 +563,6 @@ function createESP(player)
             text.BackgroundTransparency = 1
         end
 
-        -- Beam / Ray
         if not rays[player] then
             local a = Instance.new("Attachment", workspace.CurrentCamera)
             local b = Instance.new("Attachment", char:WaitForChild("HumanoidRootPart"))
@@ -629,7 +614,6 @@ function updateESP()
     end
 end
 
--- Toggle trong GUI
 MiscTab:CreateToggle({
    Name = "ESP Người chơi",
    CurrentValue = false,
@@ -877,7 +861,7 @@ OtherTab:CreateSlider({
 local CreditTab = Window:CreateTab("Credits", 12655175600)
 CreditTab:CreateSection("Credits & update")
 
-local TestingLabel = Tab:CreateLabel("Đang thử nghiệm: Tính năng mới sắp ra mắt!")
+local TestingLabel = CreditTab:CreateLabel("Đang thử nghiệm: Tính năng mới sắp ra mắt!")
 TestingLabel:Set("Đang thử nghiệm: Tính năng mới sắp ra mắt!", 6034974930, Color3.fromRGB(0, 255, 255), false)
 
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
@@ -909,5 +893,5 @@ local Toggle = CreditTab:CreateToggle({
 
 local Paragraph = CreditTab:CreateParagraph({
     Title = "Ghi chú & Credit",
-    Content = "Script được tạo bởi Sey, một phần từ video và một phần bởi AI.\nTui cảm ơn bạn đã dùng script này.\n\nUpdate 3.7:\n- Cập nhật thêm 3 tính năng ESP\n- Thêm một trang mới: ESP và Credit\n- Sẽ thêm âm thanh click vào ngày mai."
+    Content = "Script được tạo bởi Sey, một phần từ video và một phần bởi AI.Tui cảm ơn bạn đã dùng script này.Update 3.7:Cập nhật thêm 3 tính năng ESPxThêm một trang mới: ESP và Credit, Sẽ thêm âm thanh click vào ngày mai."
 })
