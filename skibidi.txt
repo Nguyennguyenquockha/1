@@ -13,7 +13,6 @@ local Window = Rayfield:CreateWindow({
    },
 })
 
---==[ Tab: Dead Rails ]==--
 local MainTab = Window:CreateTab("Dead Rails", 122874126897828)
 MainTab:CreateSection("Main Features")
 
@@ -117,6 +116,33 @@ local Toggle = VisualTab:CreateToggle({
     Flag = "ToggleBandageESP",
     Callback = function(state)
         BandageESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+local SnakeOilESPEnabled = false
+
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Snake Oil",
+    CustomName = "Snake Oil",
+    Color = Color3.fromRGB(0, 160, 0), -- Xanh lá đậm
+    PrimaryPart = "Bottle",
+    IsEnabled = function(obj)
+        return SnakeOilESPEnabled
+    end
+})
+
+local Toggle = VisualTab:CreateToggle({
+    Name = "ESP Snake Oil ",
+    CurrentValue = false,
+    Flag = "ToggleSnakeOilESP",
+    Callback = function(state)
+        SnakeOilESPEnabled = state
     end
 })
 
@@ -382,7 +408,7 @@ local CameraESPEnabled = false
 ESP:AddObjectListener(workspace.RuntimeItems, {
     Name = "Camera",
     CustomName = "Camera",
-    Color = Color3.fromRGB(0, 255, 255),
+    Color = Color3.fromRGB(210, 105, 30),
     PrimaryPart = "Root",
     IsEnabled = function(obj)
         return CameraESPEnabled
@@ -877,3 +903,10 @@ OtherTab:CreateSlider({
       game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
    end,
 })
+
+local CreditTab = Window:CreateTab("Credits", 12655175600)
+CreditTab:CreateSection("Credits & update")
+local Divider = CreditTab:CreateDivider(Script đc tạo bởi sey, 1 phần video và 1 phần bởi AI.Tui cảm ơn đã dùng script này
+update 3.7:
+-Update thêm 3 tíng năng esp + 1 trang mới esp và credit
+-sẽ thêm âm thanh click vào ngày mai) 
