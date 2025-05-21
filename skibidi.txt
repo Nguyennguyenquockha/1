@@ -58,6 +58,11 @@ MainTab:CreateButton({
    end,
 })
 
+local Paragraph = Tab:CreateParagraph({
+    Title = "Ghi chú & Credit",
+    Content = "Script được tạo bởi Sey, một phần từ video và một phần bởi AI.\nTui cảm ơn bạn đã dùng script này.\n\nUpdate 3.7:\n- Cập nhật thêm 3 tính năng ESP\n- Thêm một trang mới: ESP và Credit\n- Sẽ thêm âm thanh click vào ngày mai."
+})
+
 local VisualTab = Window:CreateTab("Visual🤔", 124285276508951)
 VisualTab:CreateSection("Esp items")
 
@@ -156,6 +161,33 @@ local Toggle = VisualTab:CreateToggle({
     Flag = "ToggleNewspaperESP",
     Callback = function(state)
         ESP.NewspaperESPEnabled = state
+    end
+})
+
+local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+ESP.Players = false
+ESP.Boxes = false
+ESP.Names = true
+ESP:Toggle(true)
+
+local MonsterESPEnabled = false
+
+ESP:AddObjectListener(workspace.RuntimeItems, {
+    Name = "Model_Runner",
+    CustomName = "Monster",
+    Color = Color3.fromRGB(255, 0, 0), -- Màu đỏ
+    PrimaryPart = "Torso",
+    IsEnabled = function(obj)
+        return MonsterESPEnabled
+    end
+})
+
+local Toggle = CreditTab:CreateToggle({
+    Name = "ESP dead Monster (bản test v1)",
+    CurrentValue = false,
+    Flag = "ToggleMonsterESP",
+    Callback = function(state)
+        MonsterESPEnabled = state
     end
 })
 
@@ -856,42 +888,4 @@ OtherTab:CreateSlider({
    Callback = function(Value)
       game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
    end,
-})
-
-local CreditTab = Window:CreateTab("Credits", 12655175600)
-CreditTab:CreateSection("Credits & update")
-
-local TestingLabel = CreditTab:CreateLabel("Đang thử nghiệm: Tính năng mới sắp ra mắt!")
-TestingLabel:Set("Đang thử nghiệm: Tính năng mới sắp ra mắt!", 6034974930, Color3.fromRGB(0, 255, 255), false)
-
-local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
-ESP.Players = false
-ESP.Boxes = false
-ESP.Names = true
-ESP:Toggle(true)
-
-local MonsterESPEnabled = false
-
-ESP:AddObjectListener(workspace.RuntimeItems, {
-    Name = "Model_Runner",
-    CustomName = "Monster",
-    Color = Color3.fromRGB(255, 0, 0), -- Màu đỏ
-    PrimaryPart = "Torso",
-    IsEnabled = function(obj)
-        return MonsterESPEnabled
-    end
-})
-
-local Toggle = CreditTab:CreateToggle({
-    Name = "ESP dead Monster (bản test v1)",
-    CurrentValue = false,
-    Flag = "ToggleMonsterESP",
-    Callback = function(state)
-        MonsterESPEnabled = state
-    end
-})
-
-local Paragraph = CreditTab:CreateParagraph({
-    Title = "Ghi chú & Credit",
-    Content = "Script được tạo bởi Sey, một phần từ video và một phần bởi AI.Tui cảm ơn bạn đã dùng script này.Update 3.7:Cập nhật thêm 3 tính năng ESPxThêm một trang mới: ESP và Credit, Sẽ thêm âm thanh click vào ngày mai."
 })
