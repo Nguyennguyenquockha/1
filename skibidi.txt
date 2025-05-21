@@ -58,11 +58,6 @@ MainTab:CreateButton({
    end,
 })
 
-local Paragraph = Tab:CreateParagraph({
-    Title = "Ghi chú & Credit",
-    Content = "Script được tạo bởi Sey, một phần từ video và một phần bởi AI.\nTui cảm ơn bạn đã dùng script này.\n\nUpdate 3.7:\n- Cập nhật thêm 3 tính năng ESP\n- Thêm một trang mới: ESP và Credit\n- Sẽ thêm âm thanh click vào ngày mai."
-})
-
 local VisualTab = Window:CreateTab("Visual🤔", 124285276508951)
 VisualTab:CreateSection("Esp items")
 
