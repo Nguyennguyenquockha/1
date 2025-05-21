@@ -876,12 +876,10 @@ OtherTab:CreateSlider({
 
 local CreditTab = Window:CreateTab("Credits", 12655175600)
 CreditTab:CreateSection("Credits & update")
-local Paragraph = CreditTab:CreateParagraph({Title = "script đc tạo bởi sey_roblox", Content = " 1 phần video và 1 phần bởi AI.Tui cảm ơn đã dùng script này
-update 3.7:
--Update thêm 3 tíng năng esp + 1 trang mới esp và credit
--sẽ thêm âm thanh click vào ngày mai"})
 
-Label:Set("Tính năng đang test", 4483362458, Color3.fromRGB(255, 255, 255), false)
+local TestingLabel = Tab:CreateLabel("Đang thử nghiệm: Tính năng mới sắp ra mắt!")
+TestingLabel:Set("Đang thử nghiệm: Tính năng mới sắp ra mắt!", 6034974930, Color3.fromRGB(0, 255, 255), false)
+
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
 ESP.Boxes = false
@@ -907,4 +905,9 @@ local Toggle = CreditTab:CreateToggle({
     Callback = function(state)
         MonsterESPEnabled = state
     end
+})
+
+local Paragraph = CreditTab:CreateParagraph({
+    Title = "Ghi chú & Credit",
+    Content = "Script được tạo bởi Sey, một phần từ video và một phần bởi AI.\nTui cảm ơn bạn đã dùng script này.\n\nUpdate 3.7:\n- Cập nhật thêm 3 tính năng ESP\n- Thêm một trang mới: ESP và Credit\n- Sẽ thêm âm thanh click vào ngày mai."
 })
