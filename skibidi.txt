@@ -425,43 +425,6 @@ local Toggle = VisualTab:CreateToggle({
     end
 })
 
-local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
-ESP.Players = false
-ESP.Boxes = false
-ESP.Names = true
-ESP:Toggle(true)
-
-local OutlawESPEnabled = false
-
-ESP:AddObjectListener(workspace.RandomBuildings.OutlawCamp.StandaloneZombiePart.Zombies, {
-    Name = "Model_RevolverOutlaw",
-    CustomName = "cướp",
-    Color = Color3.fromRGB(255, 0, 0),
-    PrimaryPart = "HumanoidRootPart",
-    IsEnabled = function(obj)
-        return OutlawESPEnabled
-    end
-})
-
-ESP:AddObjectListener(workspace.RandomBuildings.OutlawCamp.StandaloneZombiePart.Zombies, {
-    Name = "Model_RifleOutlaw",
-    CustomName = "cướp",
-    Color = Color3.fromRGB(255, 85, 0),
-    PrimaryPart = "HumanoidRootPart",
-    IsEnabled = function(obj)
-        return OutlawESPEnabled
-    end
-})
-
-local Toggle = MainTab:CreateToggle({
-    Name = "ESP Outlaws",
-    CurrentValue = false,
-    Flag = "ToggleOutlawESP",
-    Callback = function(state)
-        OutlawESPEnabled = state
-    end
-})
-
 --==[ Tab: Teleport Map ]==--
 local teleportTab = Window:CreateTab("💥Teleport Map", 76118072590572)
 teleportTab:CreateSection("Map Teleport")
