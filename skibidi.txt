@@ -390,7 +390,7 @@ local Toggle = VisualTab:CreateToggle({
     end
 }), 
 
-local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+local ESP = loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/fury.txt'))()
 ESP.Players = false
 ESP.Boxes = false
 ESP.Names = true
@@ -417,7 +417,7 @@ local Toggle = VisualTab:CreateToggle({
     end
 })
 
-local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
+local ESP = loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/fury.txt'))()
 ESP.Players = false
 ESP.Boxes = false
 ESP.Names = true
