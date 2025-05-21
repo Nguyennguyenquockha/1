@@ -365,7 +365,7 @@ local Toggle = VisualTab:CreateToggle({
     Callback = function(state)
         UnicornESPEnabled = state
     end
-})
+}), 
 
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
@@ -876,12 +876,12 @@ OtherTab:CreateSlider({
 
 local CreditTab = Window:CreateTab("Credits", 12655175600)
 CreditTab:CreateSection("Credits & update")
-local Divider = CreditTab:CreateDivider(Script đc tạo bởi sey, 1 phần video và 1 phần bởi AI.Tui cảm ơn đã dùng script này
+local Paragraph = CreditTab:CreateParagraph({Title = "script đc tạo bởi sey_roblox", Content = " 1 phần video và 1 phần bởi AI.Tui cảm ơn đã dùng script này
 update 3.7:
 -Update thêm 3 tíng năng esp + 1 trang mới esp và credit
--sẽ thêm âm thanh click vào ngày mai)
+-sẽ thêm âm thanh click vào ngày mai"})
 
-CreditTab:CreateSection("tíng năng đang test")
+Label:Set("Tính năng đang test", 4483362458, Color3.fromRGB(255, 255, 255), false)
 local ESP = loadstring(game:HttpGet("https://kiriot22.com/releases/ESP.lua"))()
 ESP.Players = false
 ESP.Boxes = false
@@ -900,7 +900,7 @@ ESP:AddObjectListener(workspace.RuntimeItems, {
     end
 })
 
-local Toggle = VisualTab:CreateToggle({
+local Toggle = CreditTab:CreateToggle({
     Name = "ESP dead Monster (bản test v1)",
     CurrentValue = false,
     Flag = "ToggleMonsterESP",
