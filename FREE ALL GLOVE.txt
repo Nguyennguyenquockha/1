@@ -1,0 +1,17 @@
+game:GetService("Workspace").Timeoutoah_swashbuckler_ship.Cannon.Seatgame:GetService("Workspace").Timeoutoah_swashbuckler_ship.Cannon.Seatlocal function NetworkFunc(Name)
+	for i,v in pairs(game:GetService("ReplicatedStorage")._NETWORK:GetChildren()) do
+		if v:IsA("RemoteEvent") then
+			v:FireServer(Name)
+		end
+	end
+end
+
+local GaypassGloves = {"OVERKILL", "CUSTOM", "Spectator", "Titan", "Ultra Instinct", "Acrobat"}
+for i,v in pairs(game:GetService("Workspace").Lobby:GetChildren()) do
+pcall(function()
+if v.CFrame.Z < -18 and not table.find(GaypassGloves, v.Name) then
+NetworkFunc(v.Name)
+end
+end)
+end
+NetworkFunc("potato")
