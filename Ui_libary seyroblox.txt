@@ -1,277 +1,244 @@
 local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
+local CoreGui = game:GetService("CoreGui")
 
-local Library = {}
+local KhaUI = {}
+KhaUI.__index = KhaUI
 
-function CreateCorner(radius)
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, radius or 8)
-	return corner
+local Themes = {
+    Dark = {
+        Background = Color3.fromRGB(25, 25, 25),
+        Accent = Color3.fromRGB(45, 45, 45),
+        Text = Color3.fromRGB(255, 255, 255)
+    },
+    Blue = {
+        Background = Color3.fromRGB(20, 20, 35),
+        Accent = Color3.fromRGB(50, 50, 80),
+        Text = Color3.fromRGB(180, 220, 255)
+    }
+}
+
+local currentTheme = Themes.Dark
+
+local function create(class, props)
+    local inst = Instance.new(class)
+    for i, v in pairs(props) do
+        inst[i] = v
+    end
+    return inst
 end
 
-function Tween(obj, props, time)
-	TweenService:Create(obj, TweenInfo.new(time or 0.25), props):Play()
+function KhaUI:CreateWindow(title)
+    local Screen = create("ScreenGui", {Name = "KhaUILib", Parent = CoreGui, ResetOnSpawn = false})
+
+    local MainFrame = create("Frame", {
+        Size = UDim2.new(0, 400, 0, 300),
+        Position = UDim2.new(0.5, -200, 0.5, -150),
+        BackgroundColor3 = currentTheme.Background,
+        BorderSizePixel = 0,
+        Parent = Screen
+    })
+    create("UICorner", {CornerRadius = UDim.new(0, 10), Parent = MainFrame})
+
+    local Title = create("TextLabel", {
+        Text = title,
+        Size = UDim2.new(1, -40, 0, 30),
+        Position = UDim2.new(0, 10, 0, 5),
+        BackgroundTransparency = 1,
+        TextColor3 = currentTheme.Text,
+        Font = Enum.Font.GothamBold,
+        TextSize = 18,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Parent = MainFrame
+    })
+
+    local CloseBtn = create("TextButton", {
+        Text = "✕", Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(1, -35, 0, 5),
+        BackgroundColor3 = currentTheme.Accent,
+        TextColor3 = currentTheme.Text,
+        Parent = MainFrame
+    })
+    create("UICorner", {CornerRadius = UDim.new(0, 8), Parent = CloseBtn})
+
+    local Prompt = create("Frame", {
+        Size = UDim2.new(0, 200, 0, 100),
+        Position = UDim2.new(0.5, -100, 0.5, -50),
+        BackgroundColor3 = currentTheme.Accent,
+        Visible = false,
+        Parent = MainFrame
+    })
+    create("UICorner", {Parent = Prompt})
+    create("TextLabel", {
+        Text = "Bạn có muốn tắt UI này?", Size = UDim2.new(1, 0, 0, 40),
+        BackgroundTransparency = 1, TextColor3 = currentTheme.Text,
+        Parent = Prompt
+    })
+    local OK = create("TextButton", {Text = "OK", Position = UDim2.new(0, 10, 0, 50), Size = UDim2.new(0, 80, 0, 30), BackgroundColor3 = Color3.fromRGB(70, 200, 100), Parent = Prompt})
+    local Cancel = create("TextButton", {Text = "Cancel", Position = UDim2.new(1, -90, 0, 50), Size = UDim2.new(0, 80, 0, 30), BackgroundColor3 = Color3.fromRGB(200, 70, 70), Parent = Prompt})
+    create("UICorner", {Parent = OK}) create("UICorner", {Parent = Cancel})
+
+    CloseBtn.MouseButton1Click:Connect(function()
+        Prompt.Visible = true
+    end)
+
+    OK.MouseButton1Click:Connect(function()
+        Screen:Destroy()
+    end)
+    Cancel.MouseButton1Click:Connect(function()
+        Prompt.Visible = false
+    end)
+
+    local TabsFrame = create("Frame", {
+        Size = UDim2.new(0, 100, 1, -40),
+        Position = UDim2.new(0, 0, 0, 40),
+        BackgroundColor3 = currentTheme.Accent,
+        Parent = MainFrame
+    })
+    create("UICorner", {Parent = TabsFrame})
+
+    local ContentFrame = create("Frame", {
+        Size = UDim2.new(1, -110, 1, -40),
+        Position = UDim2.new(0, 110, 0, 40),
+        BackgroundColor3 = currentTheme.Accent,
+        Parent = MainFrame
+    })
+    create("UICorner", {Parent = ContentFrame})
+
+    local Tabs = {}
+    function Tabs:AddTab(name)
+        local TabBtn = create("TextButton", {
+            Text = name,
+            Size = UDim2.new(1, -10, 0, 30),
+            Position = UDim2.new(0, 5, 0, #Tabs * 35),
+            BackgroundColor3 = currentTheme.Background,
+            TextColor3 = currentTheme.Text,
+            Parent = TabsFrame
+        })
+        create("UICorner", {Parent = TabBtn})
+
+        local TabContent = create("Frame", {
+            Size = UDim2.new(1, 0, 1, 0),
+            BackgroundTransparency = 1,
+            Visible = false,
+            Parent = ContentFrame
+        })
+
+        TabBtn.MouseButton1Click:Connect(function()
+            for _, f in ipairs(ContentFrame:GetChildren()) do
+                if f:IsA("Frame") then f.Visible = false end
+            end
+            TabContent.Visible = true
+        end)
+
+        table.insert(Tabs, TabBtn)
+
+        local API = {}
+
+        function API:AddButton(text, callback)
+            local btn = create("TextButton", {
+                Text = text, Size = UDim2.new(1, -20, 0, 30),
+                Position = UDim2.new(0, 10, 0, #TabContent:GetChildren() * 35),
+                BackgroundColor3 = currentTheme.Background,
+                TextColor3 = currentTheme.Text,
+                Parent = TabContent
+            })
+            create("UICorner", {Parent = btn})
+            btn.MouseButton1Click:Connect(callback)
+        end
+
+        function API:AddSlider(name, min, max, default, callback)
+            local slider = create("TextButton", {
+                Text = name .. ": " .. tostring(default),
+                Size = UDim2.new(1, -20, 0, 30),
+                Position = UDim2.new(0, 10, 0, #TabContent:GetChildren() * 35),
+                BackgroundColor3 = currentTheme.Background,
+                TextColor3 = currentTheme.Text,
+                Parent = TabContent
+            })
+            create("UICorner", {Parent = slider})
+
+            slider.MouseButton1Click:Connect(function()
+                default = (default + 1 > max) and min or default + 1
+                slider.Text = name .. ": " .. tostring(default)
+                callback(default)
+            end)
+        end
+
+        function API:AddToggle(name, default, callback)
+            local state = default
+            local toggle = create("TextButton", {
+                Text = name .. ": " .. tostring(state),
+                Size = UDim2.new(1, -20, 0, 30),
+                Position = UDim2.new(0, 10, 0, #TabContent:GetChildren() * 35),
+                BackgroundColor3 = currentTheme.Background,
+                TextColor3 = currentTheme.Text,
+                Parent = TabContent
+            })
+            create("UICorner", {Parent = toggle})
+            toggle.MouseButton1Click:Connect(function()
+                state = not state
+                toggle.Text = name .. ": " .. tostring(state)
+                callback(state)
+            end)
+        end
+
+        function API:AddDropdown(name, list, callback)
+            local selected = list[1] or ""
+            local dropdown = create("TextButton", {
+                Text = name .. ": " .. selected,
+                Size = UDim2.new(1, -20, 0, 30),
+                Position = UDim2.new(0, 10, 0, #TabContent:GetChildren() * 35),
+                BackgroundColor3 = currentTheme.Background,
+                TextColor3 = currentTheme.Text,
+                Parent = TabContent
+            })
+            create("UICorner", {Parent = dropdown})
+
+            dropdown.MouseButton1Click:Connect(function()
+                selected = list[(table.find(list, selected) % #list) + 1]
+                dropdown.Text = name .. ": " .. selected
+                callback(selected)
+            end)
+        end
+
+        function API:AddTextBox(name, callback)
+            local box = create("TextBox", {
+                Text = "", PlaceholderText = name,
+                Size = UDim2.new(1, -20, 0, 30),
+                Position = UDim2.new(0, 10, 0, #TabContent:GetChildren() * 35),
+                BackgroundColor3 = currentTheme.Background,
+                TextColor3 = currentTheme.Text,
+                ClearTextOnFocus = false,
+                Parent = TabContent
+            })
+            create("UICorner", {Parent = box})
+            box.FocusLost:Connect(function()
+                callback(box.Text)
+            end)
+        end
+
+        function API:Notify(text)
+            local notify = create("TextLabel", {
+                Text = text,
+                Size = UDim2.new(0, 250, 0, 40),
+                BackgroundColor3 = currentTheme.Accent,
+                TextColor3 = currentTheme.Text,
+                Position = UDim2.new(0.5, -125, 0, -50),
+                Parent = Screen
+            })
+            create("UICorner", {Parent = notify})
+            TweenService:Create(notify, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -125, 0, 10)}):Play()
+            task.delay(3, function()
+                TweenService:Create(notify, TweenInfo.new(0.5), {Position = UDim2.new(0.5, -125, 0, -50)}):Play()
+                task.wait(0.5)
+                notify:Destroy()
+            end)
+        end
+
+        return API
+    end
+
+    return Tabs
 end
 
-function Hover(button)
-	button.MouseEnter:Connect(function()
-		Tween(button, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.15)
-	end)
-	button.MouseLeave:Connect(function()
-		Tween(button, {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}, 0.15)
-	end)
-end
-
-function Library:CreateWindow(title)
-	local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-	screenGui.Name = "KhaUILib"
-	screenGui.ResetOnSpawn = false
-
-	local blur = Instance.new("BlurEffect", game:GetService("Lighting"))
-	blur.Size = 8
-
-	local main = Instance.new("Frame", screenGui)
-	main.Size = UDim2.new(0, 450, 0, 350)
-	main.Position = UDim2.new(0.5, 0, 0.5, 0)
-	main.AnchorPoint = Vector2.new(0.5, 0.5)
-	main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-	main.BorderSizePixel = 0
-	main.Active = true
-	main.Draggable = true
-	CreateCorner(10).Parent = main
-
-	local titleLabel = Instance.new("TextLabel", main)
-	titleLabel.Size = UDim2.new(1, 0, 0, 40)
-	titleLabel.Text = title or "Kha UI"
-	titleLabel.BackgroundTransparency = 1
-	titleLabel.TextColor3 = Color3.new(1,1,1)
-	titleLabel.Font = Enum.Font.GothamBold
-	titleLabel.TextSize = 20
-
-	local close = Instance.new("TextButton", main)
-	close.Size = UDim2.new(0, 30, 0, 30)
-	close.Position = UDim2.new(1, -35, 0, 5)
-	close.Text = "X"
-	close.TextColor3 = Color3.new(1,0.5,0.5)
-	close.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-	CreateCorner().Parent = close
-
-	close.MouseButton1Click:Connect(function()
-		local confirm = Instance.new("TextLabel", main)
-		confirm.Size = UDim2.new(0, 300, 0, 60)
-		confirm.Position = UDim2.new(0.5, -150, 0.5, -30)
-		confirm.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-		confirm.Text = "Bạn có muốn tắt UI không?"
-		confirm.TextColor3 = Color3.new(1,1,1)
-		confirm.TextSize = 16
-		confirm.Font = Enum.Font.Gotham
-		CreateCorner().Parent = confirm
-
-		local ok = Instance.new("TextButton", confirm)
-		ok.Size = UDim2.new(0, 60, 0, 25)
-		ok.Position = UDim2.new(1, -70, 1, -30)
-		ok.Text = "OK"
-		ok.BackgroundColor3 = Color3.fromRGB(70, 0, 0)
-		ok.TextColor3 = Color3.new(1,1,1)
-		ok.Font = Enum.Font.Gotham
-		ok.TextSize = 14
-		CreateCorner().Parent = ok
-
-		ok.MouseButton1Click:Connect(function()
-			blur:Destroy()
-			screenGui:Destroy()
-		end)
-	end)
-
-	function Library:Notify(text)
-		local note = Instance.new("TextLabel", screenGui)
-		note.Text = text
-		note.Size = UDim2.new(0, 300, 0, 30)
-		note.Position = UDim2.new(0.5, -150, 1, -40)
-		note.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-		note.TextColor3 = Color3.new(1,1,1)
-		note.Font = Enum.Font.Gotham
-		note.TextSize = 14
-		CreateCorner().Parent = note
-		Tween(note, {Position = UDim2.new(0.5, -150, 1, -80)}, 0.3)
-		task.delay(3, function()
-			Tween(note, {Position = UDim2.new(0.5, -150, 1, -40)}, 0.3)
-			task.wait(0.3)
-			note:Destroy()
-		end)
-	end
-
-	local TabFunctions = {}
-
-	function TabFunctions:AddTab(tabName)
-		local tabFrame = Instance.new("Frame", main)
-		tabFrame.Size = UDim2.new(1, -20, 1, -50)
-		tabFrame.Position = UDim2.new(0, 10, 0, 45)
-		tabFrame.BackgroundTransparency = 1
-
-		local y = 0
-
-		local Tab = {}
-
-		function Tab:AddButton(text, callback)
-			local btn = Instance.new("TextButton", tabFrame)
-			btn.Size = UDim2.new(1, 0, 0, 30)
-			btn.Position = UDim2.new(0, 0, 0, y)
-			btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-			btn.Text = text
-			btn.TextColor3 = Color3.new(1,1,1)
-			btn.Font = Enum.Font.Gotham
-			btn.TextSize = 14
-			CreateCorner().Parent = btn
-			Hover(btn)
-			btn.MouseButton1Click:Connect(callback)
-			y = y + 35
-		end
-
-		function Tab:AddToggle(text, default, callback)
-			local state = default
-			local tog = Instance.new("TextButton", tabFrame)
-			tog.Size = UDim2.new(1, 0, 0, 30)
-			tog.Position = UDim2.new(0, 0, 0, y)
-			tog.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-			tog.Text = text .. ": " .. (state and "ON" or "OFF")
-			tog.TextColor3 = Color3.new(1,1,1)
-			tog.Font = Enum.Font.Gotham
-			tog.TextSize = 14
-			CreateCorner().Parent = tog
-			Hover(tog)
-			tog.MouseButton1Click:Connect(function()
-				state = not state
-				tog.Text = text .. ": " .. (state and "ON" or "OFF")
-				callback(state)
-			end)
-			y = y + 35
-		end
-
-		function Tab:AddSlider(text, min, max, default, callback)
-			local val = default
-			local lbl = Instance.new("TextLabel", tabFrame)
-			lbl.Size = UDim2.new(1, 0, 0, 20)
-			lbl.Position = UDim2.new(0, 0, 0, y)
-			lbl.Text = text .. ": " .. val
-			lbl.BackgroundTransparency = 1
-			lbl.TextColor3 = Color3.new(1,1,1)
-			lbl.Font = Enum.Font.Gotham
-			lbl.TextSize = 14
-			y = y + 20
-
-			local slider = Instance.new("Frame", tabFrame)
-			slider.Size = UDim2.new(1, 0, 0, 10)
-			slider.Position = UDim2.new(0, 0, 0, y)
-			slider.BackgroundColor3 = Color3.fromRGB(35,35,35)
-			CreateCorner().Parent = slider
-
-			local fill = Instance.new("Frame", slider)
-			fill.Size = UDim2.new((val - min)/(max - min), 0, 1, 0)
-			fill.BackgroundColor3 = Color3.fromRGB(100,100,255)
-			fill.BorderSizePixel = 0
-			CreateCorner().Parent = fill
-
-			local dragging = false
-			slider.InputBegan:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true end
-			end)
-			slider.InputEnded:Connect(function(input)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
-			end)
-			UserInputService.InputChanged:Connect(function(input)
-				if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-					local percent = math.clamp((input.Position.X - slider.AbsolutePosition.X)/slider.AbsoluteSize.X, 0, 1)
-					val = math.floor((min + (max - min) * percent) + 0.5)
-					fill.Size = UDim2.new(percent, 0, 1, 0)
-					lbl.Text = text .. ": " .. val
-					callback(val)
-				end
-			end)
-			y = y + 20
-		end
-
-		function Tab:AddDropdown(text, items, callback)
-			local current = items[1]
-			local drop = Instance.new("TextButton", tabFrame)
-			drop.Size = UDim2.new(1, 0, 0, 30)
-			drop.Position = UDim2.new(0, 0, 0, y)
-			drop.Text = text .. ": " .. current
-			drop.BackgroundColor3 = Color3.fromRGB(35,35,35)
-			drop.TextColor3 = Color3.new(1,1,1)
-			drop.Font = Enum.Font.Gotham
-			drop.TextSize = 14
-			CreateCorner().Parent = drop
-			Hover(drop)
-
-			local open = false
-			local opts = Instance.new("Frame", tabFrame)
-			opts.Size = UDim2.new(1, 0, 0, #items * 25)
-			opts.Position = UDim2.new(0, 0, 0, y + 30)
-			opts.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-			CreateCorner().Parent = opts
-			opts.Visible = false
-
-			for i, v in pairs(items) do
-				local opt = Instance.new("TextButton", opts)
-				opt.Size = UDim2.new(1, 0, 0, 25)
-				opt.Position = UDim2.new(0, 0, 0, (i - 1) * 25)
-				opt.Text = v
-				opt.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-				opt.TextColor3 = Color3.new(1,1,1)
-				opt.Font = Enum.Font.Gotham
-				opt.TextSize = 14
-				CreateCorner().Parent = opt
-				Hover(opt)
-				opt.MouseButton1Click:Connect(function()
-					current = v
-					drop.Text = text .. ": " .. current
-					opts.Visible = false
-					callback(v)
-				end)
-			end
-
-			drop.MouseButton1Click:Connect(function()
-				opts.Visible = not opts.Visible
-			end)
-			y = y + 35 + (#items * 25)
-		end
-
-		function Tab:AddTextbox(text, placeholder, callback)
-			local label = Instance.new("TextLabel", tabFrame)
-			label.Size = UDim2.new(1, 0, 0, 20)
-			label.Position = UDim2.new(0, 0, 0, y)
-			label.BackgroundTransparency = 1
-			label.Text = text
-			label.TextColor3 = Color3.new(1, 1, 1)
-			label.Font = Enum.Font.Gotham
-			label.TextSize = 14
-			y = y + 20
-
-			local box = Instance.new("TextBox", tabFrame)
-			box.Size = UDim2.new(1, 0, 0, 30)
-			box.Position = UDim2.new(0, 0, 0, y)
-			box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-			box.TextColor3 = Color3.new(1, 1, 1)
-			box.PlaceholderText = placeholder or "Nhập..."
-			box.Text = ""
-			box.Font = Enum.Font.Gotham
-			box.TextSize = 14
-			box.ClearTextOnFocus = false
-			CreateCorner().Parent = box
-			y = y + 35
-
-			box.FocusLost:Connect(function()
-				callback(box.Text)
-			end)
-		end
-
-		return Tab
-	end
-
-	return TabFunctions
-end
-
-return Library
+return setmetatable({}, KhaUI)
