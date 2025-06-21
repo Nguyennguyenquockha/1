@@ -1,5 +1,6 @@
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
 local Library = {}
@@ -14,6 +15,15 @@ function Tween(obj, props, time)
 	TweenService:Create(obj, TweenInfo.new(time or 0.25), props):Play()
 end
 
+function Hover(button)
+	button.MouseEnter:Connect(function()
+		Tween(button, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.15)
+	end)
+	button.MouseLeave:Connect(function()
+		Tween(button, {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}, 0.15)
+	end)
+end
+
 function Library:CreateWindow(title)
 	local screenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
 	screenGui.Name = "KhaUILib"
@@ -24,10 +34,10 @@ function Library:CreateWindow(title)
 
 	local main = Instance.new("Frame", screenGui)
 	main.Size = UDim2.new(0, 450, 0, 350)
-	main.Position = UDim2.new(0.5, -225, 0.5, -175)
+	main.Position = UDim2.new(0.5, 0, 0.5, 0)
+	main.AnchorPoint = Vector2.new(0.5, 0.5)
 	main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 	main.BorderSizePixel = 0
-	main.AnchorPoint = Vector2.new(0.5, 0.5)
 	main.Active = true
 	main.Draggable = true
 	CreateCorner(10).Parent = main
@@ -74,6 +84,24 @@ function Library:CreateWindow(title)
 			screenGui:Destroy()
 		end)
 	end)
+
+	function Library:Notify(text)
+		local note = Instance.new("TextLabel", screenGui)
+		note.Text = text
+		note.Size = UDim2.new(0, 300, 0, 30)
+		note.Position = UDim2.new(0.5, -150, 1, -40)
+		note.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+		note.TextColor3 = Color3.new(1,1,1)
+		note.Font = Enum.Font.Gotham
+		note.TextSize = 14
+		CreateCorner().Parent = note
+		Tween(note, {Position = UDim2.new(0.5, -150, 1, -80)}, 0.3)
+		task.delay(3, function()
+			Tween(note, {Position = UDim2.new(0.5, -150, 1, -40)}, 0.3)
+			task.wait(0.3)
+			note:Destroy()
+		end)
+	end
 
 	local TabFunctions = {}
 
@@ -153,10 +181,10 @@ function Library:CreateWindow(title)
 			slider.InputEnded:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
 			end)
-			game:GetService("UserInputService").InputChanged:Connect(function(input)
-				if dragging then
+			UserInputService.InputChanged:Connect(function(input)
+				if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
 					local percent = math.clamp((input.Position.X - slider.AbsolutePosition.X)/slider.AbsoluteSize.X, 0, 1)
-					val = math.floor(min + (max - min) * percent)
+					val = math.floor((min + (max - min) * percent) + 0.5)
 					fill.Size = UDim2.new(percent, 0, 1, 0)
 					lbl.Text = text .. ": " .. val
 					callback(val)
@@ -211,19 +239,39 @@ function Library:CreateWindow(title)
 			y = y + 35 + (#items * 25)
 		end
 
+		function Tab:AddTextbox(text, placeholder, callback)
+			local label = Instance.new("TextLabel", tabFrame)
+			label.Size = UDim2.new(1, 0, 0, 20)
+			label.Position = UDim2.new(0, 0, 0, y)
+			label.BackgroundTransparency = 1
+			label.Text = text
+			label.TextColor3 = Color3.new(1, 1, 1)
+			label.Font = Enum.Font.Gotham
+			label.TextSize = 14
+			y = y + 20
+
+			local box = Instance.new("TextBox", tabFrame)
+			box.Size = UDim2.new(1, 0, 0, 30)
+			box.Position = UDim2.new(0, 0, 0, y)
+			box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+			box.TextColor3 = Color3.new(1, 1, 1)
+			box.PlaceholderText = placeholder or "Nhập..."
+			box.Text = ""
+			box.Font = Enum.Font.Gotham
+			box.TextSize = 14
+			box.ClearTextOnFocus = false
+			CreateCorner().Parent = box
+			y = y + 35
+
+			box.FocusLost:Connect(function()
+				callback(box.Text)
+			end)
+		end
+
 		return Tab
 	end
 
 	return TabFunctions
-end
-
-function Hover(button)
-	button.MouseEnter:Connect(function()
-		Tween(button, {BackgroundColor3 = Color3.fromRGB(50, 50, 50)}, 0.15)
-	end)
-	button.MouseLeave:Connect(function()
-		Tween(button, {BackgroundColor3 = Color3.fromRGB(35, 35, 35)}, 0.15)
-	end)
 end
 
 return Library
