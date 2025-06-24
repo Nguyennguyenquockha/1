@@ -10,39 +10,10 @@ print("hello")
 
 end)
 
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
+Tab:CreateTextbox("Instant steal (soon) ", function(text)
 
-local instantEnabled = false
+        print(text)
 
-local function makeInstant()
-    for _, v in ipairs(workspace:GetDescendants()) do
-        pcall(function()
-            if v:IsA("ProximityPrompt") then
-                v.HoldDuration = 0
-            end
-        end)
-    end
-end
-
-local ProximityPromptService = game:GetService("ProximityPromptService")
-ProximityPromptService.PromptAdded:Connect(function(prompt)
-    pcall(function()
-        if instantEnabled and prompt:IsA("ProximityPrompt") then
-            prompt.HoldDuration = 0
-        end
-    end)
-end)
-
-Tab:CreateToggle("Instant Button", function(value)
-    instantEnabled = value
-    if value then
-        makeInstant()
-        print("✅ Instant Button ON")
-    else
-        print("❌ Instant Button OFF")
-    end
 end)
 
 Tab:CreateToggle("Teleport to shop", function(value)
