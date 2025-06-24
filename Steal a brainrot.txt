@@ -11,34 +11,33 @@ local player = Players.LocalPlayer
 -- Biến lưu trạng thái
 local godModeConnection
 
-Tab:CreateToggle("God Mode", function(value)
-    if value then
-        -- Bật God Mode
-        godModeConnection = RunService.RenderStepped:Connect(function()
-            local character = player.Character
-            if character and character:FindFirstChild("Humanoid") then
-                local humanoid = character:FindFirstChild("Humanoid")
-                humanoid.Health = humanoid.MaxHealth
+local instantEnabled = false
 
-                -- Xóa ragdoll
-                if character:FindFirstChild("Ragdoll") then
-                    character.Ragdoll:Destroy()
-                end
-
-                -- Xóa knockback
-                for _,v in pairs(character:GetDescendants()) do
-                    if v:IsA("BodyVelocity") or v:IsA("BodyAngularVelocity") then
-                        v:Destroy()
-                    end
-                end
-            end
-        end)
-    else
-        -- Tắt God Mode
-        if godModeConnection then
-            godModeConnection:Disconnect()
-            godModeConnection = nil
+-- Hàm kích hoạt Instant Button
+local function makeInstant()
+    for _, v in ipairs(workspace:GetDescendants()) do
+        if v:IsA("ProximityPrompt") then
+            v.HoldDuration = 0
         end
+    end
+end
+
+-- Theo dõi khi có Prompt mới
+local ProximityPromptService = game:GetService("ProximityPromptService")
+ProximityPromptService.PromptAdded:Connect(function(prompt)
+    if instantEnabled and prompt:IsA("ProximityPrompt") then
+        prompt.HoldDuration = 0
+    end
+end)
+
+-- Toggle bật/tắt chức năng
+Tab:CreateToggle("Instant Button", function(value)
+    instantEnabled = value
+    if value then
+        makeInstant()
+        print("✅ Instant Button ON")
+    else
+        print("❌ Instant Button OFF")
     end
 end)
 
