@@ -4,13 +4,6 @@ local Window = Library:NewWindow("Steal a brainrot script")
 
 local Tab = Window:NewSection("Main")
 
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
--- Biến lưu trạng thái
-local godModeConnection
-
 local instantEnabled = false
 
 -- Hàm kích hoạt Instant Button
