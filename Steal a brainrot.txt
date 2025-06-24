@@ -4,6 +4,12 @@ local Window = Library:NewWindow("Steal a brainrot script")
 
 local Tab = Window:NewSection("Main")
 
+Tab:CreateButton("Steal | Arbix Hub", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/InSTANTSTEAL.lua"))()
+print("hello")
+
+end)
+
 local instantEnabled = false
 
 -- Hàm kích hoạt Instant Button
@@ -32,12 +38,6 @@ Tab:CreateToggle("Instant Button", function(value)
     else
         print("❌ Instant Button OFF")
     end
-end)
-
-Tab:CreateButton("Steal | Arbix Hub", function()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/InSTANTSTEAL.lua"))()
-print("hello")
-
 end)
 
 Tab:CreateToggle("Teleport to shop", function(value)
