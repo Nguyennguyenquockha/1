@@ -36,6 +36,25 @@ Tab:CreateToggle("Teleport to shop", function(value)
 	end
 end)
 
+-- Infinite Jump Toggle
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local jumping = false
+
+Tab:CreateToggle("Infinite Jump", function(value)
+    jumping = value
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if jumping then
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character:FindFirstChildOfClass("Humanoid"):ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -201,6 +220,44 @@ player.CharacterAdded:Connect(function()
 	end
 end)
 
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Biến lưu trạng thái
+local godModeConnection
+
+Tab:CreateToggle("God Mode", function(value)
+    if value then
+        -- Bật God Mode
+        godModeConnection = RunService.RenderStepped:Connect(function()
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                local humanoid = character:FindFirstChild("Humanoid")
+                humanoid.Health = humanoid.MaxHealth
+
+                -- Xóa ragdoll
+                if character:FindFirstChild("Ragdoll") then
+                    character.Ragdoll:Destroy()
+                end
+
+                -- Xóa knockback
+                for _,v in pairs(character:GetDescendants()) do
+                    if v:IsA("BodyVelocity") or v:IsA("BodyAngularVelocity") then
+                        v:Destroy()
+                    end
+                end
+            end
+        end)
+    else
+        -- Tắt God Mode
+        if godModeConnection then
+            godModeConnection:Disconnect()
+            godModeConnection = nil
+        end
+    end
+end)
+
 -- visual tab
 local espTab = Window:NewSection("Visual")
 
@@ -210,12 +267,26 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
 local tracers = {}
-local boxes = {}
 local ESPEnabled = false
 
--- Tạo toggle ESP
-espTab:CreateToggle("ESP Toggle", function(value)
+espTab:CreateToggle("ESP player", function(value)
 	ESPEnabled = value
+
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character then
+			local char = player.Character
+
+			local nameEsp = char:FindFirstChild("NameESP")
+			if nameEsp then
+				nameEsp.Enabled = value
+			end
+
+			local hl = char:FindFirstChildOfClass("Highlight")
+			if hl then
+				hl.Enabled = value
+			end
+		end
+	end
 end)
 
 -- Tạo ESP (Name + Highlight)
@@ -225,13 +296,14 @@ local function createESP(player)
 
 	local char = player.Character
 
-	-- Name ESP
+	-- Name
 	if not char:FindFirstChild("NameESP") then
 		local bill = Instance.new("BillboardGui", char)
 		bill.Name = "NameESP"
 		bill.Size = UDim2.new(0, 100, 0, 40)
 		bill.StudsOffset = Vector3.new(0, 3, 0)
 		bill.AlwaysOnTop = true
+		bill.Enabled = ESPEnabled
 
 		local text = Instance.new("TextLabel", bill)
 		text.Size = UDim2.new(1, 0, 1, 0)
@@ -243,17 +315,18 @@ local function createESP(player)
 		text.TextScaled = true
 	end
 
-	-- Highlight ESP
+	-- Highlight
 	if not char:FindFirstChildOfClass("Highlight") then
 		local hl = Instance.new("Highlight", char)
 		hl.FillColor = Color3.fromRGB(255, 255, 255)
 		hl.OutlineColor = Color3.fromRGB(0, 0, 0)
 		hl.FillTransparency = 0.5
 		hl.OutlineTransparency = 0
+		hl.Enabled = ESPEnabled
 	end
 end
 
--- Tạo line Tracer
+-- Vẽ line Tracer
 local function createTracer()
 	local line = Drawing.new("Line")
 	line.Thickness = 2
@@ -262,22 +335,38 @@ local function createTracer()
 	return line
 end
 
--- Tạo box 2D
-local function createBox()
-	local box = Drawing.new("Square")
-	box.Thickness = 2
-	box.Color = Color3.fromRGB(255, 255, 255)
-	box.Visible = false
-	return box
-end
-
--- Cập nhật ESP liên tục
+-- Cập nhật tracer liên tục
 RunService.RenderStepped:Connect(function()
-	if not ESPEnabled then
-		for _, v in pairs(tracers) do v.Visible = false end
-		for _, v in pairs(boxes) do v.Visible = false end
-		return
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			createESP(player)
+
+			local hrp = player.Character.HumanoidRootPart
+			local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+
+			if not tracers[player] then
+				tracers[player] = createTracer()
+			end
+
+			local tracer = tracers[player]
+			if ESPEnabled and onScreen then
+				tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+				tracer.To = Vector2.new(pos.X, pos.Y)
+				tracer.Visible = true
+			else
+				tracer.Visible = false
+			end
+		end
 	end
+end)
+
+-- Khi player mới vào
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		wait(1)
+		createESP(player)
+	end)
+end)
 
 	for _, player in pairs(Players:GetPlayers()) do
 		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
@@ -286,7 +375,6 @@ RunService.RenderStepped:Connect(function()
 			local hrp = player.Character.HumanoidRootPart
 			local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
 
-			-- Tracer
 			if not tracers[player] then
 				tracers[player] = createTracer()
 			end
@@ -299,7 +387,6 @@ RunService.RenderStepped:Connect(function()
 				tracer.Visible = false
 			end
 
-			-- Box
 			if not boxes[player] then
 				boxes[player] = createBox()
 			end
@@ -323,7 +410,6 @@ RunService.RenderStepped:Connect(function()
 	end
 end)
 
--- Khi player mới vào game
 Players.PlayerAdded:Connect(function(player)
 	player.CharacterAdded:Connect(function()
 		wait(1)
@@ -336,7 +422,6 @@ local Workspace = game:GetService("Workspace")
 
 local espEnabled = false
 
--- Lọc các part đang có TextLabel chứa "s" (giây)
 local function isJailTextPart(part)
 	for _, descendant in ipairs(part:GetDescendants()) do
 		if descendant:IsA("TextLabel") and descendant.Text:match("%d+s") then
@@ -346,7 +431,6 @@ local function isJailTextPart(part)
 	return nil
 end
 
--- Tạo ESP trên cửa nhà
 local function createESP(part, textLabel)
 	if part:FindFirstChild("ESP_JailText") then return end
 
@@ -368,7 +452,6 @@ local function createESP(part, textLabel)
 	label.TextScaled = false
 	label.Text = "⛓️ " .. textLabel.Text
 
-	-- Cập nhật liên tục
 	local conn
 	conn = RunService.RenderStepped:Connect(function()
 		if not espEnabled or not textLabel or not label or not label.Parent then
@@ -384,7 +467,6 @@ local function createESP(part, textLabel)
 	end)
 end
 
--- Xoá tất cả các ESP nếu tắt toggle
 local function removeAllESP()
 	for _, obj in ipairs(Workspace:GetDescendants()) do
 		if obj:IsA("BasePart") then
@@ -396,7 +478,6 @@ local function removeAllESP()
 	end
 end
 
--- Quét toàn map và tạo ESP nếu phát hiện cửa bị khóa
 local function scanForJailTexts()
 	if not espEnabled then return end
 
@@ -410,7 +491,6 @@ local function scanForJailTexts()
 	end
 end
 
--- Vòng lặp chính
 task.spawn(function()
 	while true do
 		if espEnabled then
@@ -420,7 +500,6 @@ task.spawn(function()
 	end
 end)
 
--- Toggle từ UI
 espTab:CreateToggle("Esp locked", function(value)
 	espEnabled = value
 	print("ESP Jail đang:", value and "BẬT" or "TẮT")
