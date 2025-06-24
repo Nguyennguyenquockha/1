@@ -36,7 +36,6 @@ Tab:CreateToggle("Teleport to shop", function(value)
 	end
 end)
 
--- Infinite Jump Toggle
 local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -546,12 +545,6 @@ local byTab = Window:NewSection("creadits")
 
 byTab:CreateButton("Make by sey_roblox", function()
 
-print("hello")
-
-end)
-
-byTab:CreateButton("Gui make by Wizard", function()
-
-print("hello")
+print("Credits by me")
 
 end)
