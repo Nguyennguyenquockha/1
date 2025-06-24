@@ -555,9 +555,3 @@ byTab:CreateButton("Gui make by Wizard", function()
 print("hello")
 
 end)
-
-byTab:CreateButton("Script make by someone", function()
-
-print("hello")
-
-end)
