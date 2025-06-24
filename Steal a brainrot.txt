@@ -10,26 +10,31 @@ print("hello")
 
 end)
 
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
 local instantEnabled = false
 
--- Hàm kích hoạt Instant Button
 local function makeInstant()
     for _, v in ipairs(workspace:GetDescendants()) do
-        if v:IsA("ProximityPrompt") then
-            v.HoldDuration = 0
-        end
+        pcall(function()
+            if v:IsA("ProximityPrompt") then
+                v.HoldDuration = 0
+            end
+        end)
     end
 end
 
--- Theo dõi khi có Prompt mới
 local ProximityPromptService = game:GetService("ProximityPromptService")
 ProximityPromptService.PromptAdded:Connect(function(prompt)
-    if instantEnabled and prompt:IsA("ProximityPrompt") then
-        prompt.HoldDuration = 0
-    end
+    pcall(function()
+        if instantEnabled and prompt:IsA("ProximityPrompt") then
+            prompt.HoldDuration = 0
+        end
+    end)
 end)
 
--- Toggle bật/tắt chức năng
 Tab:CreateToggle("Instant Button", function(value)
     instantEnabled = value
     if value then
@@ -273,14 +278,12 @@ espTab:CreateToggle("ESP player", function(value)
 	end
 end)
 
--- Tạo ESP (Name + Highlight)
 local function createESP(player)
 	if player == LocalPlayer then return end
 	if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
 
 	local char = player.Character
 
-	-- Name
 	if not char:FindFirstChild("NameESP") then
 		local bill = Instance.new("BillboardGui", char)
 		bill.Name = "NameESP"
@@ -299,7 +302,6 @@ local function createESP(player)
 		text.TextScaled = true
 	end
 
-	-- Highlight
 	if not char:FindFirstChildOfClass("Highlight") then
 		local hl = Instance.new("Highlight", char)
 		hl.FillColor = Color3.fromRGB(255, 255, 255)
@@ -310,7 +312,6 @@ local function createESP(player)
 	end
 end
 
--- Vẽ line Tracer
 local function createTracer()
 	local line = Drawing.new("Line")
 	line.Thickness = 2
@@ -319,7 +320,6 @@ local function createTracer()
 	return line
 end
 
--- Cập nhật tracer liên tục
 RunService.RenderStepped:Connect(function()
 	for _, player in pairs(Players:GetPlayers()) do
 		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
