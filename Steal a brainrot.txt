@@ -1,0 +1,484 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local Window = Library:NewWindow("Steal a brainrot script")
+
+local Tab = Window:NewSection("Main")
+
+Tab:CreateButton("Steal | Arbix Hub", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/InSTANTSTEAL.lua"))()
+print("hello")
+
+end)
+
+Tab:CreateToggle("Teleport to shop", function(value)
+	if value then
+		local player = game.Players.LocalPlayer
+		local character = player.Character or player.CharacterAdded:Wait()
+		local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+		local cf = CFrame.new(
+			-378.420959, -6.25197887, 59.4905052,
+			0.106838159, -1.85177775e-08, 0.994276404,
+			1.08971683e-07, 1, 6.91502233e-09,
+			-0.994276404, 1.07609189e-07, 0.106838159
+		)
+
+		humanoidRootPart.CFrame = cf
+		humanoidRootPart.Anchored = true
+		print("✅ Teleport ke Shop dan Anchor aktif 2 detik.")
+
+		task.delay(2, function()
+			humanoidRootPart.Anchored = false
+			print("🔓 Anchor dilepas.")
+		end)
+	else
+		print("❌ Toggle dimatikan.")
+	end
+end)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+local boostGui
+local enforceConnection
+local boostBtn
+local boostAktif = false
+local dragToggle, dragInput, dragStart, startPos
+
+-- Hàm tăng speed
+local function startEnforceSpeed()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoid = character:WaitForChild("Humanoid")
+
+	enforceConnection = RunService.Heartbeat:Connect(function()
+		if humanoid.WalkSpeed ~= 42 then
+			humanoid.WalkSpeed = 42
+		end
+	end)
+
+	humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+		if boostAktif and humanoid.WalkSpeed ~= 42 then
+			humanoid.WalkSpeed = 42
+		end
+	end)
+end
+
+-- Hàm dừng boost
+local function stopEnforceSpeed()
+	if enforceConnection then
+		enforceConnection:Disconnect()
+		enforceConnection = nil
+	end
+
+	local char = player.Character
+	if char then
+		local hum = char:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.WalkSpeed = 38
+		end
+	end
+end
+
+-- Drag GUI
+local function enableDragging(frame)
+	frame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragToggle = true
+			dragStart = input.Position
+			startPos = frame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragToggle = false
+				end
+			end)
+		end
+	end)
+
+	frame.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			dragInput = input
+		end
+	end)
+
+	game:GetService("UserInputService").InputChanged:Connect(function(input)
+		if input == dragInput and dragToggle then
+			local delta = input.Position - dragStart
+			frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+end
+
+-- Tạo GUI boost
+local function buatBoostGUI()
+	if boostGui then return end
+
+	boostGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+	boostGui.Name = "BoostGUI"
+	boostGui.ResetOnSpawn = false
+
+	boostBtn = Instance.new("TextButton", boostGui)
+	boostBtn.Size = UDim2.new(0, 96, 0, 32)
+	boostBtn.Position = UDim2.new(0.5, 0, 1, -70)
+	boostBtn.AnchorPoint = Vector2.new(0.5, 1)
+	boostBtn.BackgroundColor3 = Color3.fromRGB(0, 85, 170)
+	boostBtn.TextColor3 = Color3.new(1, 1, 1)
+	boostBtn.Font = Enum.Font.FredokaOne
+	boostBtn.TextSize = 17
+	boostBtn.BorderSizePixel = 0
+	boostBtn.AutoButtonColor = false
+	boostBtn.Text = "Boost OFF"
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = boostBtn
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(0, 200, 255)
+	stroke.Thickness = 2
+	stroke.Transparency = 0.1
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = boostBtn
+
+	-- Kéo được
+	enableDragging(boostBtn)
+
+	-- Hiệu ứng bấm phóng to rồi thu nhỏ
+	boostBtn.MouseButton1Click:Connect(function()
+		boostAktif = not boostAktif
+
+		-- Tween scale
+		local tweenUp = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, 106, 0, 38)
+		})
+		local tweenDown = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Size = UDim2.new(0, 96, 0, 32)
+		})
+		tweenUp:Play()
+		tweenUp.Completed:Connect(function()
+			tweenDown:Play()
+		end)
+
+		if boostAktif then
+			boostBtn.Text = "Boost ON"
+			startEnforceSpeed()
+		else
+			boostBtn.Text = "Boost OFF"
+			stopEnforceSpeed()
+		end
+	end)
+end
+
+-- Xóa GUI
+local function hapusBoostGUI()
+	if boostGui then
+		boostGui:Destroy()
+		boostGui = nil
+	end
+	stopEnforceSpeed()
+	boostAktif = false
+end
+
+-- Toggle gọi GUI
+Tab:CreateToggle("Boost Speed", function(v)
+	if v then
+		buatBoostGUI()
+	else
+		hapusBoostGUI()
+	end
+end)
+
+-- Khi respawn nếu boost đang bật thì giữ lại
+player.CharacterAdded:Connect(function()
+	if boostAktif then
+		startEnforceSpeed()
+	end
+end)
+
+-- visual tab
+local espTab = Window:NewSection("Visual")
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local tracers = {}
+local boxes = {}
+local ESPEnabled = false
+
+-- Tạo toggle ESP
+espTab:CreateToggle("ESP Toggle", function(value)
+	ESPEnabled = value
+end)
+
+-- Tạo ESP (Name + Highlight)
+local function createESP(player)
+	if player == LocalPlayer then return end
+	if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+
+	local char = player.Character
+
+	-- Name ESP
+	if not char:FindFirstChild("NameESP") then
+		local bill = Instance.new("BillboardGui", char)
+		bill.Name = "NameESP"
+		bill.Size = UDim2.new(0, 100, 0, 40)
+		bill.StudsOffset = Vector3.new(0, 3, 0)
+		bill.AlwaysOnTop = true
+
+		local text = Instance.new("TextLabel", bill)
+		text.Size = UDim2.new(1, 0, 1, 0)
+		text.BackgroundTransparency = 1
+		text.Text = player.Name
+		text.TextColor3 = Color3.fromRGB(255, 255, 255)
+		text.TextStrokeTransparency = 0
+		text.Font = Enum.Font.GothamBold
+		text.TextScaled = true
+	end
+
+	-- Highlight ESP
+	if not char:FindFirstChildOfClass("Highlight") then
+		local hl = Instance.new("Highlight", char)
+		hl.FillColor = Color3.fromRGB(255, 255, 255)
+		hl.OutlineColor = Color3.fromRGB(0, 0, 0)
+		hl.FillTransparency = 0.5
+		hl.OutlineTransparency = 0
+	end
+end
+
+-- Tạo line Tracer
+local function createTracer()
+	local line = Drawing.new("Line")
+	line.Thickness = 2
+	line.Color = Color3.fromRGB(255, 255, 255)
+	line.Visible = false
+	return line
+end
+
+-- Tạo box 2D
+local function createBox()
+	local box = Drawing.new("Square")
+	box.Thickness = 2
+	box.Color = Color3.fromRGB(255, 255, 255)
+	box.Visible = false
+	return box
+end
+
+-- Cập nhật ESP liên tục
+RunService.RenderStepped:Connect(function()
+	if not ESPEnabled then
+		for _, v in pairs(tracers) do v.Visible = false end
+		for _, v in pairs(boxes) do v.Visible = false end
+		return
+	end
+
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			createESP(player)
+
+			local hrp = player.Character.HumanoidRootPart
+			local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+
+			-- Tracer
+			if not tracers[player] then
+				tracers[player] = createTracer()
+			end
+			local tracer = tracers[player]
+			if onScreen then
+				tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+				tracer.To = Vector2.new(pos.X, pos.Y)
+				tracer.Visible = true
+			else
+				tracer.Visible = false
+			end
+
+			-- Box
+			if not boxes[player] then
+				boxes[player] = createBox()
+			end
+			local box = boxes[player]
+
+			local head = player.Character:FindFirstChild("Head")
+			local torso = hrp
+			if head and torso then
+				local top = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
+				local bottom = Camera:WorldToViewportPoint(torso.Position - Vector3.new(0, 2.5, 0))
+				local height = math.abs(top.Y - bottom.Y)
+				local width = height / 2
+
+				box.Size = Vector2.new(width, height)
+				box.Position = Vector2.new(pos.X - width / 2, pos.Y - height / 2)
+				box.Visible = onScreen
+			else
+				box.Visible = false
+			end
+		end
+	end
+end)
+
+-- Khi player mới vào game
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		wait(1)
+		createESP(player)
+	end)
+end)
+
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local espEnabled = false
+
+-- Lọc các part đang có TextLabel chứa "s" (giây)
+local function isJailTextPart(part)
+	for _, descendant in ipairs(part:GetDescendants()) do
+		if descendant:IsA("TextLabel") and descendant.Text:match("%d+s") then
+			return descendant
+		end
+	end
+	return nil
+end
+
+-- Tạo ESP trên cửa nhà
+local function createESP(part, textLabel)
+	if part:FindFirstChild("ESP_JailText") then return end
+
+	local bill = Instance.new("BillboardGui")
+	bill.Name = "ESP_JailText"
+	bill.Adornee = part
+	bill.Size = UDim2.new(0, 100, 0, 25)
+	bill.StudsOffset = Vector3.new(0, 3, 0)
+	bill.AlwaysOnTop = true
+	bill.Parent = part
+
+	local label = Instance.new("TextLabel", bill)
+	label.Size = UDim2.new(1, 0, 1, 0)
+	label.BackgroundTransparency = 1
+	label.TextColor3 = Color3.fromRGB(255, 255, 0)
+	label.TextStrokeTransparency = 0.4
+	label.Font = Enum.Font.SourceSansSemibold
+	label.TextSize = 16
+	label.TextScaled = false
+	label.Text = "⛓️ " .. textLabel.Text
+
+	-- Cập nhật liên tục
+	local conn
+	conn = RunService.RenderStepped:Connect(function()
+		if not espEnabled or not textLabel or not label or not label.Parent then
+			if conn then conn:Disconnect() end
+			return
+		end
+
+		if textLabel.Text:match("%d+s") then
+			label.Text = "⛓️ " .. textLabel.Text
+		else
+			label.Text = ""
+		end
+	end)
+end
+
+-- Xoá tất cả các ESP nếu tắt toggle
+local function removeAllESP()
+	for _, obj in ipairs(Workspace:GetDescendants()) do
+		if obj:IsA("BasePart") then
+			local esp = obj:FindFirstChild("ESP_JailText")
+			if esp then
+				esp:Destroy()
+			end
+		end
+	end
+end
+
+-- Quét toàn map và tạo ESP nếu phát hiện cửa bị khóa
+local function scanForJailTexts()
+	if not espEnabled then return end
+
+	for _, obj in ipairs(Workspace:GetDescendants()) do
+		if obj:IsA("BasePart") and not obj:FindFirstChild("ESP_JailText") then
+			local jailText = isJailTextPart(obj)
+			if jailText then
+				createESP(obj, jailText)
+			end
+		end
+	end
+end
+
+-- Vòng lặp chính
+task.spawn(function()
+	while true do
+		if espEnabled then
+			pcall(scanForJailTexts)
+		end
+		wait(3)
+	end
+end)
+
+-- Toggle từ UI
+espTab:CreateToggle("Esp locked", function(value)
+	espEnabled = value
+	print("ESP Jail đang:", value and "BẬT" or "TẮT")
+	if not value then
+		removeAllESP()
+	end
+end)
+
+local miscTab = Window:NewSection("Misc")
+
+miscTab:CreateButton("Rejoin server", function()
+	local TeleportService = game:GetService("TeleportService")
+	local Players = game:GetService("Players")
+	local player = Players.LocalPlayer
+
+	local placeId = game.PlaceId
+	local jobId = game.JobId
+
+	TeleportService:TeleportToPlaceInstance(placeId, jobId, player)
+end)
+
+miscTab:CreateButton("Server Hop", function()
+	local HttpService = game:GetService("HttpService")
+	local TeleportService = game:GetService("TeleportService")
+	local Players = game:GetService("Players")
+	local player = Players.LocalPlayer
+
+	local url = string.format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=Asc&limit=100", game.PlaceId)
+
+	pcall(function()
+		local response = game:HttpGet(url)
+		local data = HttpService:JSONDecode(response)
+
+		for _, server in pairs(data.data) do
+			if server.playing < server.maxPlayers and server.id ~= game.JobId then
+				TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, player)
+				break
+			end
+		end
+	end)
+end)
+
+local byTab = Window:NewSection("creadits")
+
+byTab:CreateButton("Make by sey_roblox", function()
+
+print("hello")
+
+end)
+
+byTab:CreateButton("Gui make by Wizard", function()
+
+print("hello")
+
+end)
+
+byTab:CreateButton("Script make by someone", function()
+
+print("hello")
+
+end)
