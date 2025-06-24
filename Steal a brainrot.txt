@@ -4,6 +4,44 @@ local Window = Library:NewWindow("Steal a brainrot script")
 
 local Tab = Window:NewSection("Main")
 
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Biến lưu trạng thái
+local godModeConnection
+
+Tab:CreateToggle("God Mode", function(value)
+    if value then
+        -- Bật God Mode
+        godModeConnection = RunService.RenderStepped:Connect(function()
+            local character = player.Character
+            if character and character:FindFirstChild("Humanoid") then
+                local humanoid = character:FindFirstChild("Humanoid")
+                humanoid.Health = humanoid.MaxHealth
+
+                -- Xóa ragdoll
+                if character:FindFirstChild("Ragdoll") then
+                    character.Ragdoll:Destroy()
+                end
+
+                -- Xóa knockback
+                for _,v in pairs(character:GetDescendants()) do
+                    if v:IsA("BodyVelocity") or v:IsA("BodyAngularVelocity") then
+                        v:Destroy()
+                    end
+                end
+            end
+        end)
+    else
+        -- Tắt God Mode
+        if godModeConnection then
+            godModeConnection:Disconnect()
+            godModeConnection = nil
+        end
+    end
+end)
+
 Tab:CreateButton("Steal | Arbix Hub", function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Youifpg/Steal-a-Brianrot/refs/heads/main/InSTANTSTEAL.lua"))()
 print("hello")
@@ -65,7 +103,6 @@ local boostBtn
 local boostAktif = false
 local dragToggle, dragInput, dragStart, startPos
 
--- Hàm tăng speed
 local function startEnforceSpeed()
 	local character = player.Character or player.CharacterAdded:Wait()
 	local humanoid = character:WaitForChild("Humanoid")
@@ -83,7 +120,6 @@ local function startEnforceSpeed()
 	end)
 end
 
--- Hàm dừng boost
 local function stopEnforceSpeed()
 	if enforceConnection then
 		enforceConnection:Disconnect()
@@ -99,7 +135,6 @@ local function stopEnforceSpeed()
 	end
 end
 
--- Drag GUI
 local function enableDragging(frame)
 	frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -133,7 +168,6 @@ local function enableDragging(frame)
 	end)
 end
 
--- Tạo GUI boost
 local function buatBoostGUI()
 	if boostGui then return end
 
@@ -164,14 +198,11 @@ local function buatBoostGUI()
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Parent = boostBtn
 
-	-- Kéo được
 	enableDragging(boostBtn)
 
-	-- Hiệu ứng bấm phóng to rồi thu nhỏ
 	boostBtn.MouseButton1Click:Connect(function()
 		boostAktif = not boostAktif
 
-		-- Tween scale
 		local tweenUp = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 			Size = UDim2.new(0, 106, 0, 38)
 		})
@@ -217,44 +248,6 @@ player.CharacterAdded:Connect(function()
 	if boostAktif then
 		startEnforceSpeed()
 	end
-end)
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
--- Biến lưu trạng thái
-local godModeConnection
-
-Tab:CreateToggle("God Mode", function(value)
-    if value then
-        -- Bật God Mode
-        godModeConnection = RunService.RenderStepped:Connect(function()
-            local character = player.Character
-            if character and character:FindFirstChild("Humanoid") then
-                local humanoid = character:FindFirstChild("Humanoid")
-                humanoid.Health = humanoid.MaxHealth
-
-                -- Xóa ragdoll
-                if character:FindFirstChild("Ragdoll") then
-                    character.Ragdoll:Destroy()
-                end
-
-                -- Xóa knockback
-                for _,v in pairs(character:GetDescendants()) do
-                    if v:IsA("BodyVelocity") or v:IsA("BodyAngularVelocity") then
-                        v:Destroy()
-                    end
-                end
-            end
-        end)
-    else
-        -- Tắt God Mode
-        if godModeConnection then
-            godModeConnection:Disconnect()
-            godModeConnection = nil
-        end
-    end
 end)
 
 -- visual tab
@@ -365,48 +358,6 @@ Players.PlayerAdded:Connect(function(player)
 		wait(1)
 		createESP(player)
 	end)
-end)
-
-	for _, player in pairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-			createESP(player)
-
-			local hrp = player.Character.HumanoidRootPart
-			local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
-
-			if not tracers[player] then
-				tracers[player] = createTracer()
-			end
-			local tracer = tracers[player]
-			if onScreen then
-				tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-				tracer.To = Vector2.new(pos.X, pos.Y)
-				tracer.Visible = true
-			else
-				tracer.Visible = false
-			end
-
-			if not boxes[player] then
-				boxes[player] = createBox()
-			end
-			local box = boxes[player]
-
-			local head = player.Character:FindFirstChild("Head")
-			local torso = hrp
-			if head and torso then
-				local top = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
-				local bottom = Camera:WorldToViewportPoint(torso.Position - Vector3.new(0, 2.5, 0))
-				local height = math.abs(top.Y - bottom.Y)
-				local width = height / 2
-
-				box.Size = Vector2.new(width, height)
-				box.Position = Vector2.new(pos.X - width / 2, pos.Y - height / 2)
-				box.Visible = onScreen
-			else
-				box.Visible = false
-			end
-		end
-	end
 end)
 
 Players.PlayerAdded:Connect(function(player)
@@ -546,5 +497,11 @@ local byTab = Window:NewSection("creadits")
 byTab:CreateButton("Make by sey_roblox", function()
 
 print("Credits by me")
+
+end)
+
+byTab:CreateButton("Ui libary: Wizard", function()
+
+print("Libary make by wizard")
 
 end)
