@@ -10,12 +10,6 @@ print("hello")
 
 end)
 
-Tab:CreateTextbox("Instant steal (soon) ", function(text)
-
-        print(text)
-
-end)
-
 Tab:CreateToggle("Teleport to shop", function(value)
 	if value then
 		local player = game.Players.LocalPlayer
