@@ -1,6 +1,6 @@
 local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
 
-local Window = Library:NewWindow("Steal a brainrot script")
+local Window = Library:NewWindow("Dead rails script")
 
 local Tab = Window:NewSection("Main")
 
