@@ -1,0 +1,81 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local Window = Library:NewWindow("Steal a brainrot script")
+
+local Tab = Window:NewSection("Main")
+
+Tab:CreateButton("Tp to fort", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/Tpfort.github.io/refs/heads/main/Tpfort.lua"))()
+print("hello")
+
+end)
+
+Tab:CreateButton("Tp to castle", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/castletpfast.github.io/refs/heads/main/FASTCASTLE.lua"))()
+print("auto tp")
+
+end) 
+
+Tab:CreateButton("Tp to sterling town", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/sterlingnotifcation.github.io/refs/heads/main/Sterling.lua"))()
+print("Auto Tp")
+
+end)
+
+Tab:CreateButton("Tp to tesla lab", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ringtaa/tptotesla.github.io/refs/heads/main/Tptotesla.lua"))()
+print("tesla")
+
+end)
+
+Tab:CreateButton("Vehicle fly gui", function()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui'))()
+print("Fly dead rails")
+
+end)
+
+Tab:CreateButton("Aimbot NPC", function()
+loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/full.txt'))()
+print("aimbot Npc")
+
+end)
+
+local OPTab = Window:NewSection("other script OP")
+
+OPTab:CreateButton("Nullfire script", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/InfernusScripts/Null-Fire/main/Loader"))()
+print("up load nullfire")
+
+end)
+
+OPTab:CreateButton("Ringta script", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fjruie/RINGTADEADRAILS.github.io/refs/heads/main/UIRAILS.LUA"))()
+print("rinta")
+
+end) 
+
+OPTab:CreateButton("Tp war horse", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fjruie/Warhorse.github.io/refs/heads/main/ringta.lua"))()
+print("war")
+
+end) 
+
+OPTab:CreateButton("Tp death horse", function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/fjruie/newdeathtptest.github.io/refs/heads/main/newtest.lua"))()
+print("death")
+
+end) 
+
+local byTab = Window:NewSection("creadits")
+
+byTab:CreateButton("Make by sey_roblox", function()
+
+print("Credits by me")
+
+end)
+
+byTab:CreateButton("Ui libary: Wizard", function()
+
+print("Libary make by wizard")
+
+end)
