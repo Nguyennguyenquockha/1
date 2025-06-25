@@ -1,7 +1,8 @@
 local Games = loadstring(game:HttpGet("https://raw.githubusercontent.com/Nguyennguyenquockha/Kha-hub/refs/heads/main/List_game%20roblox.txt"))()
 
-for PlaceID, Execute in pairs(Games) do
+for PlaceID, ScriptURL in pairs(Games) do
     if PlaceID == game.PlaceId then
-        loadstring(game:HttpGet(Execute))()
+        loadstring(game:HttpGet(ScriptURL))()
+        break
     end
 end
