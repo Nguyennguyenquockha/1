@@ -1,0 +1,456 @@
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local Window = Library:NewWindow("Animal Hide script")
+
+local Tab = Window:NewSection("Main & misc")
+
+local ESPEnabled = false -- Ban đầu tắt
+
+local function CreateESP(player)
+    if player == LocalPlayer or not ESPEnabled then return end
+    if ESPTable[player] then
+        ESPTable[player].NameTag:Remove()
+        ESPTable[player].Tracer:Remove()
+        if ESPTable[player].Highlight then ESPTable[player].Highlight:Destroy() end
+    end
+
+    local nameTag = Drawing.new("Text")
+    nameTag.Size = 13
+    nameTag.Center = true
+    nameTag.Outline = true
+    nameTag.Font = fontUsed
+    nameTag.Color = Color3.new(1, 1, 1)
+    nameTag.Visible = false
+
+    local tracer = Drawing.new("Line")
+    tracer.Thickness = 1.5
+    tracer.Color = Color3.new(1, 0, 0)
+    tracer.Visible = false
+
+    local highlight = Instance.new("Highlight")
+    highlight.FillTransparency = 1
+    highlight.OutlineTransparency = 0
+    highlight.OutlineColor = Color3.new(1, 0, 0)
+    highlight.Adornee = player.Character or nil
+    highlight.Parent = game.CoreGui
+
+    ESPTable[player] = {
+        NameTag = nameTag,
+        Tracer = tracer,
+        Highlight = highlight
+    }
+
+    player.CharacterAdded:Connect(function(char)
+        wait(0.5)
+        if ESPTable[player] and ESPTable[player].Highlight then
+            ESPTable[player].Highlight.Adornee = char
+        end
+    end)
+end
+
+local function RemoveESP(player)
+    if ESPTable[player] then
+        ESPTable[player].NameTag:Remove()
+        ESPTable[player].Tracer:Remove()
+        if ESPTable[player].Highlight then ESPTable[player].Highlight:Destroy() end
+        ESPTable[player] = nil
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    if not ESPEnabled then
+        for _, data in pairs(ESPTable) do
+            data.NameTag.Visible = false
+            data.Tracer.Visible = false
+        end
+        return
+    end
+
+    for player, data in pairs(ESPTable) do
+        local char = player.Character
+        if char and char:FindFirstChild("Head") and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 then
+            local headPos, onScreen1 = Camera:WorldToViewportPoint(char.Head.Position)
+            local rootPos, onScreen2 = Camera:WorldToViewportPoint(char.HumanoidRootPart.Position)
+            if onScreen1 and onScreen2 then
+                data.NameTag.Position = Vector2.new(headPos.X, headPos.Y - 20)
+                data.NameTag.Text = player.Name
+                data.NameTag.Visible = true
+
+                data.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                data.Tracer.To = Vector2.new(rootPos.X, rootPos.Y)
+                data.Tracer.Visible = true
+            else
+                data.NameTag.Visible = false
+                data.Tracer.Visible = false
+            end
+        else
+            data.NameTag.Visible = false
+            data.Tracer.Visible = false
+        end
+    end
+end)
+
+-- Tự động cập nhật khi người chơi vào/ra
+Players.PlayerAdded:Connect(function(player)
+    if ESPEnabled then
+        CreateESP(player)
+        player.CharacterAdded:Connect(function()
+            wait(0.5)
+            CreateESP(player)
+        end)
+    end
+end)
+
+Players.PlayerRemoving:Connect(RemoveESP)
+
+-- ✅ Toggle BẬT/TẮT ESP
+Tab:CreateToggle("ESP Player", function(value)
+    ESPEnabled = value
+    if value then
+        for _, player in pairs(Players:GetPlayers()) do
+            CreateESP(player)
+            player.CharacterAdded:Connect(function()
+                wait(0.5)
+                CreateESP(player)
+            end)
+        end
+    else
+        for _, player in pairs(Players:GetPlayers()) do
+            RemoveESP(player)
+        end
+    end
+end)
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid = Character:WaitForChild("Humanoid")
+
+-- Infinite Jump Toggle
+local InfiniteJumpEnabled = false
+Tab:CreateToggle("Infinite Jump", function(value)
+    InfiniteJumpEnabled = value
+    print("Infinite Jump:", value)
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if InfiniteJumpEnabled then
+        Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
+-- Noclip Toggle
+local NoclipEnabled = false
+Tab:CreateToggle("Noclip", function(value)
+    NoclipEnabled = value
+    print("Noclip:", value)
+end)
+
+RunService.Stepped:Connect(function()
+    if NoclipEnabled and LocalPlayer.Character then
+        for _, v in pairs(LocalPlayer.Character:GetDescendants()) do
+            if v:IsA("BasePart") and v.CanCollide == true then
+                v.CanCollide = false
+            end
+        end
+    end
+end)
+
+local speeds = 1
+local speaker = game:GetService("Players").LocalPlayer
+local tpwalking = false
+local nowe = false
+local flyConnection = nil
+
+function startFly()
+	nowe = true
+	tpwalking = true
+
+	local hb = game:GetService("RunService").Heartbeat
+	spawn(function()
+		while tpwalking and hb:Wait() do
+			local chr = speaker.Character
+			local hum = chr and chr:FindFirstChildWhichIsA("Humanoid")
+			if hum and hum.Parent and hum.MoveDirection.Magnitude > 0 then
+				chr:TranslateBy(hum.MoveDirection)
+			end
+		end
+	end)
+
+	speaker.Character.Animate.Disabled = true
+	local Hum = speaker.Character:FindFirstChildOfClass("Humanoid") or speaker.Character:FindFirstChildOfClass("AnimationController")
+	for i, v in next, Hum:GetPlayingAnimationTracks() do
+		v:AdjustSpeed(0)
+	end
+
+	local hum = speaker.Character:FindFirstChildWhichIsA("Humanoid")
+	for _, state in pairs(Enum.HumanoidStateType:GetEnumItems()) do
+		hum:SetStateEnabled(state, false)
+	end
+	hum:ChangeState(Enum.HumanoidStateType.Swimming)
+
+	local torso = speaker.Character:FindFirstChild("Torso") or speaker.Character:FindFirstChild("UpperTorso")
+	if not torso then return end
+
+	local bg = Instance.new("BodyGyro", torso)
+	bg.P = 9e4
+	bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+	bg.cframe = torso.CFrame
+
+	local bv = Instance.new("BodyVelocity", torso)
+	bv.velocity = Vector3.new(0, 0.1, 0)
+	bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+
+	hum.PlatformStand = true
+
+	local ctrl = {f = 0, b = 0, l = 0, r = 0}
+	local speed = 0
+	local maxspeed = 50
+
+	local uis = game:GetService("UserInputService")
+
+	local function keyDown(input)
+		if input.KeyCode == Enum.KeyCode.W then ctrl.f = speeds end
+		if input.KeyCode == Enum.KeyCode.S then ctrl.b = -speeds end
+		if input.KeyCode == Enum.KeyCode.A then ctrl.l = -speeds end
+		if input.KeyCode == Enum.KeyCode.D then ctrl.r = speeds end
+	end
+
+	local function keyUp(input)
+		if input.KeyCode == Enum.KeyCode.W then ctrl.f = 0 end
+		if input.KeyCode == Enum.KeyCode.S then ctrl.b = 0 end
+		if input.KeyCode == Enum.KeyCode.A then ctrl.l = 0 end
+		if input.KeyCode == Enum.KeyCode.D then ctrl.r = 0 end
+	end
+
+	uis.InputBegan:Connect(keyDown)
+	uis.InputEnded:Connect(keyUp)
+
+	flyConnection = game:GetService("RunService").RenderStepped:Connect(function()
+		if not nowe or speaker.Character.Humanoid.Health <= 0 then return end
+
+		if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
+			speed += 0.5 + (speed / maxspeed)
+			if speed > maxspeed then speed = maxspeed end
+		elseif speed ~= 0 then
+			speed -= 1
+			if speed < 0 then speed = 0 end
+		end
+
+		if ctrl.f + ctrl.b ~= 0 or ctrl.l + ctrl.r ~= 0 then
+			bv.velocity = ((workspace.CurrentCamera.CFrame.LookVector * (ctrl.f + ctrl.b)) +
+				((workspace.CurrentCamera.CFrame * CFrame.new(ctrl.l + ctrl.r, (ctrl.f + ctrl.b) * 0.2, 0)).Position - workspace.CurrentCamera.CFrame.Position)) * speed
+		else
+			bv.velocity = Vector3.new(0, 0, 0)
+		end
+
+		bg.cframe = workspace.CurrentCamera.CFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
+	end)
+end
+
+function stopFly()
+	nowe = false
+	tpwalking = false
+	if flyConnection then flyConnection:Disconnect() flyConnection = nil end
+
+	local chr = speaker.Character
+	if chr and chr:FindFirstChild("Torso") then
+		local torso = chr.Torso
+		if torso:FindFirstChildOfClass("BodyGyro") then torso:FindFirstChildOfClass("BodyGyro"):Destroy() end
+		if torso:FindFirstChildOfClass("BodyVelocity") then torso:FindFirstChildOfClass("BodyVelocity"):Destroy() end
+	end
+	local hum = chr:FindFirstChildWhichIsA("Humanoid")
+	if hum then
+		hum.PlatformStand = false
+		for _, state in pairs(Enum.HumanoidStateType:GetEnumItems()) do
+			hum:SetStateEnabled(state, true)
+		end
+	end
+	speaker.Character.Animate.Disabled = false
+end
+
+-- ✅ Toggle bật/tắt fly
+Tab:CreateToggle("Fly", function(value)
+	if value then
+		startFly()
+	else
+		stopFly()
+	end
+end)
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+local boostGui
+local enforceConnection
+local boostBtn
+local boostAktif = false
+local dragToggle, dragInput, dragStart, startPos
+
+-- SPEED SETTING
+local BOOST_SPEED = 26
+local NORMAL_SPEED = 16
+
+local function startEnforceSpeed()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoid = character:WaitForChild("Humanoid")
+
+	enforceConnection = RunService.Heartbeat:Connect(function()
+		if humanoid.WalkSpeed ~= BOOST_SPEED then
+			humanoid.WalkSpeed = BOOST_SPEED
+		end
+	end)
+
+	humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+		if boostAktif and humanoid.WalkSpeed ~= BOOST_SPEED then
+			humanoid.WalkSpeed = BOOST_SPEED
+		end
+	end)
+end
+
+local function stopEnforceSpeed()
+	if enforceConnection then
+		enforceConnection:Disconnect()
+		enforceConnection = nil
+	end
+
+	local char = player.Character
+	if char then
+		local hum = char:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.WalkSpeed = NORMAL_SPEED
+		end
+	end
+end
+
+local function enableDragging(frame)
+	frame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			dragToggle = true
+			dragStart = input.Position
+			startPos = frame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragToggle = false
+				end
+			end)
+		end
+	end)
+
+	frame.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement then
+			dragInput = input
+		end
+	end)
+
+	game:GetService("UserInputService").InputChanged:Connect(function(input)
+		if input == dragInput and dragToggle then
+			local delta = input.Position - dragStart
+			frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+end
+
+local function buatBoostGUI()
+	if boostGui then return end
+
+	boostGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+	boostGui.Name = "BoostGUI"
+	boostGui.ResetOnSpawn = false
+
+	boostBtn = Instance.new("TextButton", boostGui)
+	boostBtn.Size = UDim2.new(0, 96, 0, 32)
+	boostBtn.Position = UDim2.new(0.5, 0, 1, -70)
+	boostBtn.AnchorPoint = Vector2.new(0.5, 1)
+	boostBtn.BackgroundColor3 = Color3.fromRGB(0, 85, 170)
+	boostBtn.TextColor3 = Color3.new(1, 1, 1)
+	boostBtn.Font = Enum.Font.FredokaOne
+	boostBtn.TextSize = 17
+	boostBtn.BorderSizePixel = 0
+	boostBtn.AutoButtonColor = false
+	boostBtn.Text = "Boost OFF"
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = boostBtn
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(0, 200, 255)
+	stroke.Thickness = 2
+	stroke.Transparency = 0.1
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = boostBtn
+
+	enableDragging(boostBtn)
+
+	boostBtn.MouseButton1Click:Connect(function()
+		boostAktif = not boostAktif
+
+		local tweenUp = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, 106, 0, 38)
+		})
+		local tweenDown = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Size = UDim2.new(0, 96, 0, 32)
+		})
+		tweenUp:Play()
+		tweenUp.Completed:Connect(function()
+			tweenDown:Play()
+		end)
+
+		if boostAktif then
+			boostBtn.Text = "Boost ON"
+			startEnforceSpeed()
+		else
+			boostBtn.Text = "Boost OFF"
+			stopEnforceSpeed()
+		end
+	end)
+end
+
+local function hapusBoostGUI()
+	if boostGui then
+		boostGui:Destroy()
+		boostGui = nil
+	end
+	stopEnforceSpeed()
+	boostAktif = false
+end
+
+-- Toggle trong tab
+Tab:CreateToggle("Boost Speed", function(v)
+	if v then
+		buatBoostGUI()
+	else
+		hapusBoostGUI()
+	end
+end)
+
+-- Giữ tốc độ khi respawn
+player.CharacterAdded:Connect(function()
+	if boostAktif then
+		startEnforceSpeed()
+	end
+end)
+
+local byTab = Window:NewSection("creadits")
+
+byTab:CreateButton("Make by sey_roblox", function()
+
+print("Credits by me")
+
+end)
+
+byTab:CreateButton("Ui libary: Wizard", function()
+
+print("Libary make by wizard")
+
+end)
