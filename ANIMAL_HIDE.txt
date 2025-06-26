@@ -4,119 +4,102 @@ local Window = Library:NewWindow("Animal Hide & seek script")
 
 local Tab = Window:NewSection("Main & misc")
 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local ESPEnabled = false
 local ESPTable = {}
-local fontUsed = Drawing.Fonts.Plex
-local ESPEnabled = false -- Đặt sau Tab:CreateToggle để tránh lỗi UI
 
-local function CreateESP(player)
-    if player == LocalPlayer or not ESPEnabled then return end
-    if ESPTable[player] then
-        ESPTable[player].NameTag:Remove()
-        ESPTable[player].Tracer:Remove()
-        if ESPTable[player].Highlight then ESPTable[player].Highlight:Destroy() end
+-- Toggle để bật/tắt ESP
+Tab:CreateToggle("ESP Player", function(value)
+    ESPEnabled = value
+    if not value then
+        for _, v in pairs(ESPTable) do
+            if v.Tracer then v.Tracer:Remove() end
+            if v.Text then v.Text:Remove() end
+            if v.Highlight then v.Highlight:Destroy() end
+        end
+        ESPTable = {}
     end
+end)
 
-    local nameTag = Drawing.new("Text")
-    nameTag.Size = 13
-    nameTag.Center = true
-    nameTag.Outline = true
-    nameTag.Font = fontUsed
-    nameTag.Color = Color3.new(1, 1, 1)
-    nameTag.Visible = false
+-- Tạo ESP cho player
+local function CreateESP(player)
+    if player == LocalPlayer or ESPTable[player] then return end
 
     local tracer = Drawing.new("Line")
-    tracer.Thickness = 1.5
-    tracer.Color = Color3.new(1, 0, 0)
+    tracer.Thickness = 1
+    tracer.Color = Color3.fromRGB(255, 0, 0)
+    tracer.Transparency = 1
     tracer.Visible = false
 
+    local text = Drawing.new("Text")
+    text.Size = 13
+    text.Center = true
+    text.Outline = true
+    text.Font = Drawing.Fonts.UI -- Phông chữ xịn
+    text.Color = Color3.fromRGB(255, 255, 255)
+    text.Visible = false
+
     local highlight = Instance.new("Highlight")
-    highlight.FillTransparency = 1
+    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    highlight.OutlineColor = Color3.new(1,1,1)
+    highlight.FillTransparency = 0.5
     highlight.OutlineTransparency = 0
-    highlight.OutlineColor = Color3.new(1, 0, 0)
-    highlight.Adornee = player.Character or nil
+    highlight.Enabled = false
+    highlight.Adornee = nil
     highlight.Parent = game.CoreGui
 
     ESPTable[player] = {
-        NameTag = nameTag,
         Tracer = tracer,
+        Text = text,
         Highlight = highlight
     }
-
-    player.CharacterAdded:Connect(function(char)
-        task.wait(0.5)
-        if ESPTable[player] and ESPTable[player].Highlight then
-            ESPTable[player].Highlight.Adornee = char
-        end
-    end)
 end
 
-local function RemoveESP(player)
+-- Cập nhật ESP mỗi frame
+RunService.RenderStepped:Connect(function()
+    if not ESPEnabled then return end
+
+    for player, esp in pairs(ESPTable) do
+        local character = player.Character
+        local hrp = character and character:FindFirstChild("HumanoidRootPart")
+        local head = character and character:FindFirstChild("Head")
+
+        if hrp and head and character:FindFirstChildOfClass("Humanoid").Health > 0 then
+            local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+            esp.Highlight.Adornee = character
+            esp.Highlight.Enabled = onScreen
+
+            esp.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+            esp.Tracer.To = Vector2.new(pos.X, pos.Y)
+            esp.Tracer.Visible = onScreen
+
+            esp.Text.Text = player.Name
+            esp.Text.Position = Vector2.new(pos.X, pos.Y - 25)
+            esp.Text.Visible = onScreen
+        else
+            esp.Tracer.Visible = false
+            esp.Text.Visible = false
+            esp.Highlight.Enabled = false
+        end
+    end
+end)
+
+-- Thêm ESP khi có player mới
+for _, player in pairs(Players:GetPlayers()) do
+    CreateESP(player)
+end
+
+Players.PlayerAdded:Connect(CreateESP)
+Players.PlayerRemoving:Connect(function(player)
     if ESPTable[player] then
-        ESPTable[player].NameTag:Remove()
-        ESPTable[player].Tracer:Remove()
+        if ESPTable[player].Tracer then ESPTable[player].Tracer:Remove() end
+        if ESPTable[player].Text then ESPTable[player].Text:Remove() end
         if ESPTable[player].Highlight then ESPTable[player].Highlight:Destroy() end
         ESPTable[player] = nil
-    end
-end
-
-RunService.RenderStepped:Connect(function()
-    if not ESPEnabled then
-        for _, data in pairs(ESPTable) do
-            data.NameTag.Visible = false
-            data.Tracer.Visible = false
-        end
-        return
-    end
-
-    for player, data in pairs(ESPTable) do
-        local char = player.Character
-        if char and char:FindFirstChild("Head") and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 then
-            local headPos, onScreen1 = Camera:WorldToViewportPoint(char.Head.Position)
-            local rootPos, onScreen2 = Camera:WorldToViewportPoint(char.HumanoidRootPart.Position)
-            if onScreen1 and onScreen2 then
-                data.NameTag.Position = Vector2.new(headPos.X, headPos.Y - 20)
-                data.NameTag.Text = player.Name
-                data.NameTag.Visible = true
-
-                data.Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-                data.Tracer.To = Vector2.new(rootPos.X, rootPos.Y)
-                data.Tracer.Visible = true
-            else
-                data.NameTag.Visible = false
-                data.Tracer.Visible = false
-            end
-        else
-            data.NameTag.Visible = false
-            data.Tracer.Visible = false
-        end
-    end
-end)
-
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function()
-        task.wait(0.5)
-        if ESPEnabled then
-            CreateESP(player)
-        end
-    end)
-    if ESPEnabled then
-        CreateESP(player)
-    end
-end)
-
-Players.PlayerRemoving:Connect(RemoveESP)
-
--- ✅ Toggle ESP đặt sau cùng để không gây lỗi UI Lib
-Tab:CreateToggle("ESP Player", function(value)
-    ESPEnabled = value
-    if value then
-        for _, player in pairs(Players:GetPlayers()) do
-            CreateESP(player)
-        end
-    else
-        for _, player in pairs(Players:GetPlayers()) do
-            RemoveESP(player)
-        end
     end
 end)
 
