@@ -1,10 +1,12 @@
 local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
 
-local Window = Library:NewWindow("Animal Hide script")
+local Window = Library:NewWindow("Animal Hide & seek script")
 
 local Tab = Window:NewSection("Main & misc")
 
-local ESPEnabled = false -- Ban đầu tắt
+local ESPTable = {}
+local fontUsed = Drawing.Fonts.Plex
+local ESPEnabled = false -- Đặt sau Tab:CreateToggle để tránh lỗi UI
 
 local function CreateESP(player)
     if player == LocalPlayer or not ESPEnabled then return end
@@ -41,7 +43,7 @@ local function CreateESP(player)
     }
 
     player.CharacterAdded:Connect(function(char)
-        wait(0.5)
+        task.wait(0.5)
         if ESPTable[player] and ESPTable[player].Highlight then
             ESPTable[player].Highlight.Adornee = char
         end
@@ -90,29 +92,26 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Tự động cập nhật khi người chơi vào/ra
 Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        if ESPEnabled then
+            CreateESP(player)
+        end
+    end)
     if ESPEnabled then
         CreateESP(player)
-        player.CharacterAdded:Connect(function()
-            wait(0.5)
-            CreateESP(player)
-        end)
     end
 end)
 
 Players.PlayerRemoving:Connect(RemoveESP)
 
--- ✅ Toggle BẬT/TẮT ESP
+-- ✅ Toggle ESP đặt sau cùng để không gây lỗi UI Lib
 Tab:CreateToggle("ESP Player", function(value)
     ESPEnabled = value
     if value then
         for _, player in pairs(Players:GetPlayers()) do
             CreateESP(player)
-            player.CharacterAdded:Connect(function()
-                wait(0.5)
-                CreateESP(player)
-            end)
         end
     else
         for _, player in pairs(Players:GetPlayers()) do
