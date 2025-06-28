@@ -1,88 +1,88 @@
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local mouse = player:GetMouse()
-
--- UI Library Table
 local Library = {}
-local CurrentTab = nil
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local Mouse = Player:GetMouse()
 
--- Create main UI
-local ScreenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-ScreenGui.Name = "CustomUILibrary"
+local ScreenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
+ScreenGui.Name = "CuteUILib"
 ScreenGui.ResetOnSpawn = false
 
-local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 500, 0, 300)
-MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
-MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-MainFrame.BorderSizePixel = 0
+local Main = Instance.new("Frame", ScreenGui)
+Main.Size = UDim2.new(0, 520, 0, 330)
+Main.Position = UDim2.new(0.5, -260, 0.5, -165)
+Main.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Main.BorderSizePixel = 0
+Main.AnchorPoint = Vector2.new(0.5, 0.5)
 
--- Tab buttons holder
-local TabHolder = Instance.new("Frame", MainFrame)
-TabHolder.Size = UDim2.new(0, 100, 1, 0)
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
+local stroke = Instance.new("UIStroke", Main)
+stroke.Color = Color3.fromRGB(90, 90, 255)
+stroke.Thickness = 2
+
+local TabHolder = Instance.new("Frame", Main)
+TabHolder.Size = UDim2.new(0, 110, 1, 0)
 TabHolder.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-TabHolder.BorderSizePixel = 0
+Instance.new("UICorner", TabHolder).CornerRadius = UDim.new(0, 10)
+Instance.new("UIListLayout", TabHolder).Padding = UDim.new(0, 6)
 
--- Content holder
-local ContentHolder = Instance.new("Frame", MainFrame)
-ContentHolder.Size = UDim2.new(1, -100, 1, 0)
-ContentHolder.Position = UDim2.new(0, 100, 0, 0)
-ContentHolder.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-ContentHolder.BorderSizePixel = 0
+local Content = Instance.new("Frame", Main)
+Content.Position = UDim2.new(0, 110, 0, 0)
+Content.Size = UDim2.new(1, -110, 1, 0)
+Content.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Instance.new("UICorner", Content).CornerRadius = UDim.new(0, 10)
 
 function Library:CreateTab(name)
-	local TabButton = Instance.new("TextButton", TabHolder)
-	TabButton.Size = UDim2.new(1, 0, 0, 40)
-	TabButton.Text = name
-	TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	TabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-	TabButton.BorderSizePixel = 0
+	local tabBtn = Instance.new("TextButton", TabHolder)
+	tabBtn.Size = UDim2.new(1, -10, 0, 40)
+	tabBtn.Text = name
+	tabBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+	tabBtn.TextColor3 = Color3.new(1, 1, 1)
+	tabBtn.BorderSizePixel = 0
+	Instance.new("UICorner", tabBtn).CornerRadius = UDim.new(0, 6)
 
-	local TabContent = Instance.new("ScrollingFrame", ContentHolder)
-	TabContent.Name = name
-	TabContent.Size = UDim2.new(1, 0, 1, 0)
-	TabContent.CanvasSize = UDim2.new(0, 0, 0, 500)
-	TabContent.BackgroundTransparency = 1
-	TabContent.Visible = false
-	TabContent.ScrollBarThickness = 5
+	local tabContent = Instance.new("ScrollingFrame", Content)
+	tabContent.Size = UDim2.new(1, 0, 1, 0)
+	tabContent.CanvasSize = UDim2.new(0, 0, 0, 500)
+	tabContent.BackgroundTransparency = 1
+	tabContent.ScrollBarThickness = 5
+	tabContent.Visible = false
+	Instance.new("UIListLayout", tabContent).Padding = UDim.new(0, 6)
 
-	TabButton.MouseButton1Click:Connect(function()
-		for _, tab in pairs(ContentHolder:GetChildren()) do
-			if tab:IsA("ScrollingFrame") then
-				tab.Visible = false
+	tabBtn.MouseButton1Click:Connect(function()
+		for _, child in pairs(Content:GetChildren()) do
+			if child:IsA("ScrollingFrame") then
+				child.Visible = false
 			end
 		end
-		TabContent.Visible = true
-		CurrentTab = TabContent
+		tabContent.Visible = true
 	end)
 
-	if not CurrentTab then
-		TabContent.Visible = true
-		CurrentTab = TabContent
+	if #Content:GetChildren() == 1 then
+		tabContent.Visible = true
 	end
 
-	local layout = Instance.new("UIListLayout", TabContent)
-	layout.Padding = UDim.new(0, 6)
+	local Tab = {}
 
-	local tabAPI = {}
-
-	function tabAPI:CreateButton(text, callback)
-		local btn = Instance.new("TextButton", TabContent)
+	function Tab:CreateButton(text, callback)
+		local btn = Instance.new("TextButton", tabContent)
 		btn.Size = UDim2.new(1, -10, 0, 30)
 		btn.Text = text
+		btn.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 		btn.TextColor3 = Color3.new(1, 1, 1)
-		btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+		btn.BorderSizePixel = 0
+		Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 		btn.MouseButton1Click:Connect(callback)
 	end
 
-	function tabAPI:CreateToggle(text, callback)
-		local toggle = Instance.new("TextButton", TabContent)
-		toggle.Size = UDim2.new(1, -10, 0, 30)
-		toggle.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-		toggle.TextColor3 = Color3.new(1, 1, 1)
-		toggle.Text = text .. ": OFF"
+	function Tab:CreateToggle(text, callback)
 		local state = false
-
+		local toggle = Instance.new("TextButton", tabContent)
+		toggle.Size = UDim2.new(1, -10, 0, 30)
+		toggle.Text = text .. ": OFF"
+		toggle.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+		toggle.TextColor3 = Color3.new(1, 1, 1)
+		toggle.BorderSizePixel = 0
+		Instance.new("UICorner", toggle).CornerRadius = UDim.new(0, 6)
 		toggle.MouseButton1Click:Connect(function()
 			state = not state
 			toggle.Text = text .. ": " .. (state and "ON" or "OFF")
@@ -90,94 +90,90 @@ function Library:CreateTab(name)
 		end)
 	end
 
-	function tabAPI:CreateDropdown(text, items, callback)
-		local drop = Instance.new("TextButton", TabContent)
-		drop.Size = UDim2.new(1, -10, 0, 30)
-		drop.Text = text
-		drop.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-		drop.TextColor3 = Color3.new(1, 1, 1)
+	function Tab:CreateDropdown(text, list, callback)
+		local dropdown = Instance.new("TextButton", tabContent)
+		dropdown.Size = UDim2.new(1, -10, 0, 30)
+		dropdown.Text = text
+		dropdown.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+		dropdown.TextColor3 = Color3.new(1, 1, 1)
+		Instance.new("UICorner", dropdown).CornerRadius = UDim.new(0, 6)
 
-		local dropdown = Instance.new("Frame", TabContent)
-		dropdown.Size = UDim2.new(1, -10, 0, #items * 30)
-		dropdown.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-		dropdown.Visible = false
+		local holder = Instance.new("Frame", tabContent)
+		holder.Size = UDim2.new(1, -10, 0, #list * 30)
+		holder.BackgroundTransparency = 1
+		holder.Visible = false
+		Instance.new("UIListLayout", holder)
 
-		local layout = Instance.new("UIListLayout", dropdown)
-
-		drop.MouseButton1Click:Connect(function()
-			dropdown.Visible = not dropdown.Visible
+		dropdown.MouseButton1Click:Connect(function()
+			holder.Visible = not holder.Visible
 		end)
 
-		for _, item in pairs(items) do
-			local opt = Instance.new("TextButton", dropdown)
+		for _, item in pairs(list) do
+			local opt = Instance.new("TextButton", holder)
 			opt.Size = UDim2.new(1, 0, 0, 30)
 			opt.Text = item
+			opt.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 			opt.TextColor3 = Color3.new(1, 1, 1)
-			opt.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+			Instance.new("UICorner", opt).CornerRadius = UDim.new(0, 6)
 			opt.MouseButton1Click:Connect(function()
 				callback(item)
-				dropdown.Visible = false
+				holder.Visible = false
 			end)
 		end
 	end
 
-	function tabAPI:CreateSlider(text, min, max, default, callback)
-		local sliderFrame = Instance.new("Frame", TabContent)
-		sliderFrame.Size = UDim2.new(1, -10, 0, 40)
-		sliderFrame.BackgroundTransparency = 1
-
-		local label = Instance.new("TextLabel", sliderFrame)
-		label.Size = UDim2.new(1, 0, 0.5, 0)
+	function Tab:CreateSlider(text, min, max, default, callback)
+		local label = Instance.new("TextLabel", tabContent)
+		label.Size = UDim2.new(1, -10, 0, 30)
 		label.Text = text .. ": " .. default
 		label.BackgroundTransparency = 1
 		label.TextColor3 = Color3.new(1, 1, 1)
 
-		local slider = Instance.new("TextButton", sliderFrame)
-		slider.Position = UDim2.new(0, 0, 0.5, 0)
-		slider.Size = UDim2.new(1, 0, 0.5, 0)
-		slider.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+		local slider = Instance.new("TextButton", tabContent)
+		slider.Size = UDim2.new(1, -10, 0, 20)
 		slider.Text = ""
+		slider.BackgroundColor3 = Color3.fromRGB(90, 90, 90)
+		Instance.new("UICorner", slider).CornerRadius = UDim.new(0, 6)
 
-		local value = default
 		local dragging = false
-
 		slider.MouseButton1Down:Connect(function()
 			dragging = true
 		end)
 
-		mouse.Move:Connect(function()
+		Mouse.Move:Connect(function()
 			if dragging then
-				local x = math.clamp(mouse.X - slider.AbsolutePosition.X, 0, slider.AbsoluteSize.X)
+				local x = math.clamp(Mouse.X - slider.AbsolutePosition.X, 0, slider.AbsoluteSize.X)
 				local percent = x / slider.AbsoluteSize.X
-				value = math.floor(min + (max - min) * percent)
+				local value = math.floor(min + (max - min) * percent)
 				label.Text = text .. ": " .. value
 				callback(value)
 			end
 		end)
 
-		mouse.Button1Up:Connect(function()
+		Mouse.Button1Up:Connect(function()
 			dragging = false
 		end)
 	end
 
-	function tabAPI:CreateTextbox(placeholder, callback)
-		local box = Instance.new("TextBox", TabContent)
+	function Tab:CreateTextbox(placeholder, callback)
+		local box = Instance.new("TextBox", tabContent)
 		box.Size = UDim2.new(1, -10, 0, 30)
 		box.PlaceholderText = placeholder
-		box.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+		box.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
 		box.TextColor3 = Color3.new(1, 1, 1)
+		Instance.new("UICorner", box).CornerRadius = UDim.new(0, 6)
 		box.FocusLost:Connect(function()
 			callback(box.Text)
 		end)
 	end
 
-	function tabAPI:CreateColorPicker(callback)
-		local btn = Instance.new("TextButton", TabContent)
+	function Tab:CreateColorPicker(callback)
+		local btn = Instance.new("TextButton", tabContent)
 		btn.Size = UDim2.new(1, -10, 0, 30)
 		btn.Text = "Pick Color"
 		btn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 		btn.TextColor3 = Color3.new(1, 1, 1)
-
+		Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 		btn.MouseButton1Click:Connect(function()
 			local color = Color3.fromHSV(math.random(), 1, 1)
 			btn.BackgroundColor3 = color
@@ -185,7 +181,7 @@ function Library:CreateTab(name)
 		end)
 	end
 
-	return tabAPI
+	return Tab
 end
 
 return Library
