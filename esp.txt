@@ -1,0 +1,95 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+local function createESP(plr)
+    if plr == LocalPlayer then return end
+    local char = plr.Character or plr.CharacterAdded:Wait()
+    local highlight = Instance.new("Highlight")
+    highlight.Adornee = char
+    highlight.FillColor = Color3.fromRGB(255, 0, 0)
+    highlight.OutlineColor = Color3.new(0, 0, 0)
+    highlight.OutlineTransparency = 0
+    highlight.FillTransparency = 0.5
+    highlight.Parent = char
+
+    local box = Drawing.new("Square")
+    box.Color = Color3.fromRGB(255, 0, 0)
+    box.Thickness = 1.5
+    box.Filled = false
+
+    local tracer = Drawing.new("Line")
+    tracer.Color = Color3.fromRGB(255, 0, 0)
+    tracer.Thickness = 1
+
+    local nameText = Drawing.new("Text")
+    nameText.Size = 14
+    nameText.Color = Color3.new(1, 0, 0)
+    nameText.Outline = true
+    nameText.Center = true
+
+    local distText = Drawing.new("Text")
+    distText.Size = 13
+    distText.Color = Color3.fromRGB(255, 0, 0)
+    distText.Outline = true
+    distText.Center = true
+
+    RunService.RenderStepped:Connect(function()
+        if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then
+            box.Visible = false
+            tracer.Visible = false
+            nameText.Visible = false
+            distText.Visible = false
+            return
+        end
+
+        local root = plr.Character:FindFirstChild("HumanoidRootPart")
+        local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+
+        if onScreen then
+            -- Box
+            local head = plr.Character:FindFirstChild("Head")
+            local torso = root
+            local headPos = Camera:WorldToViewportPoint(head.Position + Vector3.new(0, 0.5, 0))
+            local torsoPos = Camera:WorldToViewportPoint(torso.Position - Vector3.new(0, 2.5, 0))
+            local size = Vector2.new(math.abs(headPos.X - torsoPos.X) * 2, math.abs(headPos.Y - torsoPos.Y) * 2)
+
+            box.Size = size
+            box.Position = Vector2.new(pos.X - size.X / 2, pos.Y - size.Y / 2)
+            box.Visible = true
+
+            -- Tracer
+            tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+            tracer.To = Vector2.new(pos.X, pos.Y)
+            tracer.Visible = true
+
+            -- Name
+            nameText.Text = plr.Name
+            nameText.Position = Vector2.new(pos.X, pos.Y - size.Y / 2 - 15)
+            nameText.Visible = true
+
+            -- Distance
+            local dist = (Camera.CFrame.Position - root.Position).Magnitude
+            distText.Text = "["..math.floor(dist).."m]"
+            distText.Position = Vector2.new(pos.X, pos.Y + size.Y / 2 + 5)
+            distText.Visible = true
+        else
+            box.Visible = false
+            tracer.Visible = false
+            nameText.Visible = false
+            distText.Visible = false
+        end
+    end)
+end
+
+for _, plr in ipairs(Players:GetPlayers()) do
+    createESP(plr)
+end
+
+Players.PlayerAdded:Connect(function(plr)
+    plr.CharacterAdded:Connect(function()
+        wait(1)
+        createESP(plr)
+    end)
+end)
