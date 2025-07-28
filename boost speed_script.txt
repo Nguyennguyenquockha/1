@@ -1,0 +1,97 @@
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Xóa GUI cũ nếu có
+if player.PlayerGui:FindFirstChild("SpeedBoostGui") then
+	player.PlayerGui.SpeedBoostGui:Destroy()
+end
+
+-- Tạo GUI
+local screenGui = Instance.new("ScreenGui", player.PlayerGui)
+screenGui.Name = "SpeedBoostGui"
+screenGui.ResetOnSpawn = false
+
+-- Khung nút
+local boostBtn = Instance.new("TextButton")
+boostBtn.Size = UDim2.new(0, 120, 0, 40)
+boostBtn.Position = UDim2.new(0.5, -60, 0.6, 0)
+boostBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+boostBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+boostBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+boostBtn.Text = "Tăng tốc"
+boostBtn.Font = Enum.Font.SourceSansBold
+boostBtn.TextSize = 20
+boostBtn.Parent = screenGui
+boostBtn.BorderSizePixel = 0
+boostBtn.AutoButtonColor = true
+boostBtn.Active = true
+boostBtn.Draggable = false -- Không dùng cái này trên mobile
+
+-- Âm thanh
+local clickSound = Instance.new("Sound")
+clickSound.SoundId = "rbxassetid://9080070218"
+clickSound.Volume = 1
+clickSound.Parent = boostBtn
+
+-- Trạng thái
+local boosted = false
+local normalSpeed = 16
+local boostedSpeed = 100
+
+-- Kéo được trên mobile và PC
+local function enableDragging(frame)
+	local dragging = false
+	local dragStart, startPos
+
+	frame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = Vector2.new(input.Position.X, input.Position.Y)
+			startPos = frame.Position
+
+			local connection
+			connection = input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+					if connection then connection:Disconnect() end
+				end
+			end)
+		end
+	end)
+
+	UserInputService.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStart
+			frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+end
+
+-- Gọi để kéo được
+enableDragging(boostBtn)
+
+-- Chức năng nút
+boostBtn.MouseButton1Click:Connect(function()
+	clickSound:Play()
+
+	if not character or not character:FindFirstChild("Humanoid") then return end
+	local humanoid = character:FindFirstChild("Humanoid")
+
+	if not boosted then
+		normalSpeed = humanoid.WalkSpeed
+		humanoid.WalkSpeed = boostedSpeed
+		boostBtn.Text = "Boost OFF"
+	else
+		humanoid.WalkSpeed = normalSpeed
+		boostBtn.Text = "Boost ON"
+	end
+
+	boosted = not boosted
+end)
