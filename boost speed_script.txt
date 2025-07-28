@@ -1,97 +1,164 @@
-local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
 
--- Xóa GUI cũ nếu có
-if player.PlayerGui:FindFirstChild("SpeedBoostGui") then
-	player.PlayerGui.SpeedBoostGui:Destroy()
-end
+local boostGui
+local enforceConnection
+local boostBtn
+local boostAktif = false
+local DEFAULT_WALKSPEED = 16
 
--- Tạo GUI
-local screenGui = Instance.new("ScreenGui", player.PlayerGui)
-screenGui.Name = "SpeedBoostGui"
-screenGui.ResetOnSpawn = false
-
--- Khung nút
-local boostBtn = Instance.new("TextButton")
-boostBtn.Size = UDim2.new(0, 120, 0, 40)
-boostBtn.Position = UDim2.new(0.5, -60, 0.6, 0)
-boostBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-boostBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-boostBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-boostBtn.Text = "Tăng tốc"
-boostBtn.Font = Enum.Font.SourceSansBold
-boostBtn.TextSize = 20
-boostBtn.Parent = screenGui
-boostBtn.BorderSizePixel = 0
-boostBtn.AutoButtonColor = true
-boostBtn.Active = true
-boostBtn.Draggable = false -- Không dùng cái này trên mobile
-
--- Âm thanh
-local clickSound = Instance.new("Sound")
-clickSound.SoundId = "rbxassetid://9080070218"
-clickSound.Volume = 1
-clickSound.Parent = boostBtn
-
--- Trạng thái
-local boosted = false
-local normalSpeed = 16
-local boostedSpeed = 100
-
--- Kéo được trên mobile và PC
+-- Kéo chính xác mobile + PC
 local function enableDragging(frame)
-	local dragging = false
-	local dragStart, startPos
+	local dragging, dragInput, dragStart, startPos
+
+	local function update(input)
+		local delta = input.Position - dragStart
+		local newPosition = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+		frame.Position = newPosition
+	end
 
 	frame.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
-			dragStart = Vector2.new(input.Position.X, input.Position.Y)
+			dragStart = input.Position
 			startPos = frame.Position
 
-			local connection
-			connection = input.Changed:Connect(function()
+			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
 					dragging = false
-					if connection then connection:Disconnect() end
 				end
 			end)
 		end
 	end)
 
+	frame.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			dragInput = input
+		end
+	end)
+
 	UserInputService.InputChanged:Connect(function(input)
-		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-			local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStart
-			frame.Position = UDim2.new(
-				startPos.X.Scale,
-				startPos.X.Offset + delta.X,
-				startPos.Y.Scale,
-				startPos.Y.Offset + delta.Y
-			)
+		if dragging and input == dragInput then
+			update(input)
 		end
 	end)
 end
 
--- Gọi để kéo được
-enableDragging(boostBtn)
+local function startEnforceSpeed()
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoid = character:WaitForChild("Humanoid")
 
--- Chức năng nút
-boostBtn.MouseButton1Click:Connect(function()
-	clickSound:Play()
+	if enforceConnection then enforceConnection:Disconnect() end
 
-	if not character or not character:FindFirstChild("Humanoid") then return end
-	local humanoid = character:FindFirstChild("Humanoid")
+	enforceConnection = RunService.Heartbeat:Connect(function()
+		if humanoid.WalkSpeed ~= 42 then
+			humanoid.WalkSpeed = 42
+		end
+	end)
 
-	if not boosted then
-		normalSpeed = humanoid.WalkSpeed
-		humanoid.WalkSpeed = boostedSpeed
-		boostBtn.Text = "Boost OFF"
-	else
-		humanoid.WalkSpeed = normalSpeed
-		boostBtn.Text = "Boost ON"
+	humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+		if boostAktif and humanoid.WalkSpeed ~= 42 then
+			humanoid.WalkSpeed = 42
+		end
+	end)
+
+	humanoid.WalkSpeed = 42
+end
+
+local function stopEnforceSpeed()
+	if enforceConnection then
+		enforceConnection:Disconnect()
+		enforceConnection = nil
 	end
 
-	boosted = not boosted
+	local char = player.Character
+	if char then
+		local hum = char:FindFirstChildOfClass("Humanoid")
+		if hum then
+			hum.WalkSpeed = DEFAULT_WALKSPEED
+		end
+	end
+end
+
+local function buatBoostGUI()
+	if boostGui then return end
+
+	boostGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+	boostGui.Name = "BoostGUI"
+	boostGui.ResetOnSpawn = false
+
+	boostBtn = Instance.new("TextButton", boostGui)
+	boostBtn.Size = UDim2.new(0, 96, 0, 32)
+	boostBtn.Position = UDim2.new(0.5, 0, 1, -70)
+	boostBtn.AnchorPoint = Vector2.new(0.5, 1)
+	boostBtn.BackgroundColor3 = Color3.fromRGB(0, 85, 170)
+	boostBtn.TextColor3 = Color3.new(1, 1, 1)
+	boostBtn.Font = Enum.Font.FredokaOne
+	boostBtn.TextSize = 17
+	boostBtn.BorderSizePixel = 0
+	boostBtn.AutoButtonColor = false
+	boostBtn.Text = "Boost OFF"
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = boostBtn
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(0, 200, 255)
+	stroke.Thickness = 2
+	stroke.Transparency = 0.1
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = boostBtn
+
+	-- Âm thanh click
+	local clickSound = Instance.new("Sound")
+	clickSound.SoundId = "rbxassetid://9080070218"
+	clickSound.Volume = 1
+	clickSound.Parent = boostBtn
+
+	enableDragging(boostBtn)
+
+	boostBtn.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		boostAktif = not boostAktif
+
+		local tweenUp = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+			Size = UDim2.new(0, 106, 0, 38)
+		})
+		local tweenDown = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+			Size = UDim2.new(0, 96, 0, 32)
+		})
+		tweenUp:Play()
+		tweenUp.Completed:Connect(function()
+			tweenDown:Play()
+		end)
+
+		if boostAktif then
+			boostBtn.Text = "Boost ON"
+			startEnforceSpeed()
+		else
+			boostBtn.Text = "Boost OFF"
+			stopEnforceSpeed()
+		end
+	end)
+end
+
+-- Khởi tạo
+buatBoostGUI()
+
+-- Nếu nhân vật chết rồi hồi sinh, giữ lại trạng thái boost
+player.CharacterAdded:Connect(function()
+	if boostAktif then
+		startEnforceSpeed()
+	else
+		stopEnforceSpeed()
+	end
 end)
