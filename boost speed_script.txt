@@ -2,6 +2,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local Stats = game:GetService("Stats")
 local player = Players.LocalPlayer
 
 local boostGui
@@ -118,13 +119,69 @@ local function buatBoostGUI()
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke.Parent = boostBtn
 
-	-- Âm thanh click
 	local clickSound = Instance.new("Sound")
 	clickSound.SoundId = "rbxassetid://9080070218"
 	clickSound.Volume = 1
 	clickSound.Parent = boostBtn
 
 	enableDragging(boostBtn)
+
+	local statusFrame = Instance.new("Frame", boostGui)
+	statusFrame.Size = UDim2.new(0, 240, 0, 70)
+	statusFrame.Position = UDim2.new(1, -250, 0, 10)
+	statusFrame.AnchorPoint = Vector2.new(0, 0)
+	statusFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	statusFrame.BackgroundTransparency = 0.2
+	statusFrame.BorderSizePixel = 0
+
+	local corner2 = Instance.new("UICorner")
+	corner2.CornerRadius = UDim.new(0, 6)
+	corner2.Parent = statusFrame
+
+	local stroke2 = Instance.new("UIStroke")
+	stroke2.Color = Color3.fromRGB(0, 200, 255)
+	stroke2.Thickness = 1.5
+	stroke2.Transparency = 0.1
+	stroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke2.Parent = statusFrame
+
+	local statusText = Instance.new("TextLabel", statusFrame)
+	statusText.Size = UDim2.new(1, -10, 1, -10)
+	statusText.Position = UDim2.new(0, 5, 0, 5)
+	statusText.BackgroundTransparency = 1
+	statusText.TextColor3 = Color3.new(1, 1, 1)
+	statusText.Font = Enum.Font.FredokaOne
+	statusText.TextSize = 15
+	statusText.TextXAlignment = Enum.TextXAlignment.Left
+	statusText.TextYAlignment = Enum.TextYAlignment.Top
+	statusText.Text = "Tốc độ chạy hiện tại: 16\nTrạng thái của boost: OFF\nPing: 0 ms\nFPS: 0"
+
+	enableDragging(statusFrame)
+
+	-- Cập nhật Ping & FPS & trạng thái
+	local fps = 0
+	local lastTime = tick()
+	local counter = 0
+
+	RunService.RenderStepped:Connect(function()
+		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		if hum then
+			local ws = math.floor(hum.WalkSpeed + 0.5)
+			local status = boostAktif and "ON" or "OFF"
+			local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
+			statusText.Text = "Tốc độ chạy hiện tại: " .. ws ..
+				"\nTrạng thái của boost: " .. status ..
+				"\nPing: " .. ping .. " ms" ..
+				"\nFPS: " .. fps
+		end
+
+		counter += 1
+		if tick() - lastTime >= 1 then
+			fps = counter
+			counter = 0
+			lastTime = tick()
+		end
+	end)
 
 	boostBtn.MouseButton1Click:Connect(function()
 		clickSound:Play()
@@ -151,11 +208,9 @@ local function buatBoostGUI()
 	end)
 end
 
--- Khởi tạo
 buatBoostGUI()
 
--- Nếu nhân vật chết rồi hồi sinh, giữ lại trạng thái boost
-player.CharacterAdded:Connect(function()
+Players.LocalPlayer.CharacterAdded:Connect(function()
 	if boostAktif then
 		startEnforceSpeed()
 	else
