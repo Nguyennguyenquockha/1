@@ -9,9 +9,10 @@ local boostGui
 local enforceConnection
 local boostBtn
 local boostAktif = false
+local boostTime = 0
 local DEFAULT_WALKSPEED = 16
 
--- Kéo chính xác mobile + PC
+-- Kéo GUI được cả Mobile + PC
 local function enableDragging(frame)
 	local dragging, dragInput, dragStart, startPos
 
@@ -102,6 +103,8 @@ local function buatBoostGUI()
 	boostBtn.AnchorPoint = Vector2.new(0.5, 1)
 	boostBtn.BackgroundColor3 = Color3.fromRGB(0, 85, 170)
 	boostBtn.TextColor3 = Color3.new(1, 1, 1)
+	boostBtn.TextStrokeColor3 = Color3.new(0, 0, 0)
+    boostBtn.TextStrokeTransparency = 0
 	boostBtn.Font = Enum.Font.FredokaOne
 	boostBtn.TextSize = 17
 	boostBtn.BorderSizePixel = 0
@@ -127,10 +130,18 @@ local function buatBoostGUI()
 	enableDragging(boostBtn)
 
 	local statusFrame = Instance.new("Frame", boostGui)
-	statusFrame.Size = UDim2.new(0, 240, 0, 70)
+	statusFrame.Size = UDim2.new(0, 260, 0, 95)
 	statusFrame.Position = UDim2.new(1, -250, 0, 10)
 	statusFrame.AnchorPoint = Vector2.new(0, 0)
 	statusFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	
+	local bgImage = Instance.new("ImageLabel")
+    bgImage.Size = UDim2.new(1, 0, 1, 0)
+    bgImage.Position = UDim2.new(0, 0, 0, 0)
+    bgImage.BackgroundTransparency = 1
+    bgImage.Image = "rbxassetid://18878365966"
+    bgImage.ZIndex = 0
+    bgImage.Parent = statusFrame
 	statusFrame.BackgroundTransparency = 0.2
 	statusFrame.BorderSizePixel = 0
 
@@ -150,15 +161,18 @@ local function buatBoostGUI()
 	statusText.Position = UDim2.new(0, 5, 0, 5)
 	statusText.BackgroundTransparency = 1
 	statusText.TextColor3 = Color3.new(1, 1, 1)
+	statusText.TextStrokeColor3 = Color3.new(0, 0, 0)
+    statusText.TextStrokeTransparency = 0
 	statusText.Font = Enum.Font.FredokaOne
-	statusText.TextSize = 15
+	statusText.TextSize = 14
 	statusText.TextXAlignment = Enum.TextXAlignment.Left
 	statusText.TextYAlignment = Enum.TextYAlignment.Top
-	statusText.Text = "Tốc độ chạy hiện tại: 16\nTrạng thái của boost: OFF\nPing: 0 ms\nFPS: 0"
+	statusText.RichText = true
+	statusText.ZIndex = 1
+	statusText.Text = "Tốc độ chạy hiện tại: 16\nTrạng thái của boost: OFF\nThời gian boost: 0 giây\nPing: 0 ms\nFPS: 0"
 
 	enableDragging(statusFrame)
 
-	-- Cập nhật Ping & FPS & trạng thái
 	local fps = 0
 	local lastTime = tick()
 	local counter = 0
@@ -167,10 +181,11 @@ local function buatBoostGUI()
 		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 		if hum then
 			local ws = math.floor(hum.WalkSpeed + 0.5)
-			local status = boostAktif and "ON" or "OFF"
+			local boostColor = boostAktif and "<font color='rgb(0,255,0)'>ON</font>" or "<font color='rgb(255,0,0)'>OFF</font>"
 			local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
 			statusText.Text = "Tốc độ chạy hiện tại: " .. ws ..
-				"\nTrạng thái của boost: " .. status ..
+				"\nTrạng thái của boost: " .. boostColor ..
+				"\nThời gian boost: " .. boostTime .. " giây" ..
 				"\nPing: " .. ping .. " ms" ..
 				"\nFPS: " .. fps
 		end
@@ -180,6 +195,9 @@ local function buatBoostGUI()
 			fps = counter
 			counter = 0
 			lastTime = tick()
+			if boostAktif then
+				boostTime += 1
+			end
 		end
 	end)
 
@@ -204,6 +222,7 @@ local function buatBoostGUI()
 		else
 			boostBtn.Text = "Boost OFF"
 			stopEnforceSpeed()
+			boostTime = 0
 		end
 	end)
 end
