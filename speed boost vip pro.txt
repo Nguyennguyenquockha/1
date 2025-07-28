@@ -1,141 +1,157 @@
---Example key system tạo bởi kha và chat gpt
-
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
 
--- GUI
-local ScreenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-ScreenGui.Name = "GetKeyGui"
+-- Create GUI
+local ScreenGui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.Name = "KhaGetKeyGui"
 ScreenGui.ResetOnSpawn = false
 
+-- Main Frame
 local MainFrame = Instance.new("Frame", ScreenGui)
-MainFrame.Size = UDim2.new(0, 350, 0, 220)
-MainFrame.Position = UDim2.new(0.5, -175, 0.5, -110)
-MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.Size = UDim2.new(0, 400, 0, 220)
+MainFrame.Position = UDim2.new(0.5, -200, 0.5, -110)
 MainFrame.BackgroundTransparency = 0.4
-MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainFrame.BorderSizePixel = 0
-MainFrame.Visible = false
+MainFrame.ClipsDescendants = true
 MainFrame.Active = true
 MainFrame.Draggable = true
-Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 16)
+MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+MainFrame:TweenSize(UDim2.new(0, 400, 0, 220), "Out", "Bounce", 0.5)
+
+-- UICorner
+local corner = Instance.new("UICorner", MainFrame)
+corner.CornerRadius = UDim.new(0, 12)
+
+-- Background image
+local bgImage = Instance.new("ImageLabel", MainFrame)
+bgImage.Size = UDim2.new(1, 0, 1, 0)
+bgImage.Position = UDim2.new(0, 0, 0, 0)
+bgImage.Image = "rbxassetid://138057999099280"
+bgImage.BackgroundTransparency = 0.5
+bgImage.ImageTransparency = 0.5
 
 -- Title
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Text = "🔐 GET KEY SYSTEM"
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.BackgroundTransparency = 1
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.Font = Enum.Font.GothamBold
-Title.TextSize = 20
+local title = Instance.new("TextLabel", MainFrame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "🔑Get Key system"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 24
 
--- Key box
-local TextBox = Instance.new("TextBox", MainFrame)
-TextBox.PlaceholderText = "Enter your key..."
-TextBox.Size = UDim2.new(0.8, 0, 0, 35)
-TextBox.Position = UDim2.new(0.1, 0, 0.35, 0)
-TextBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextBox.Font = Enum.Font.Gotham
-TextBox.TextSize = 16
-TextBox.BorderSizePixel = 0
-Instance.new("UICorner", TextBox).CornerRadius = UDim.new(0, 10)
+-- Close Button
+local close = Instance.new("TextButton", MainFrame)
+close.Size = UDim2.new(0, 30, 0, 30)
+close.Position = UDim2.new(1, -35, 0, 5)
+close.Text = "✖"
+close.TextColor3 = Color3.new(1, 0.4, 0.4)
+close.BackgroundTransparency = 1
+close.TextSize = 18
+close.MouseButton1Click:Connect(function()
+	ScreenGui:Destroy()
+end)
 
--- Submit button
-local SubmitButton = Instance.new("TextButton", MainFrame)
-SubmitButton.Text = "Check Key"
-SubmitButton.Size = UDim2.new(0.4, 0, 0, 28)
-SubmitButton.Position = UDim2.new(0.06, 0, 0.65, 0)
-SubmitButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-SubmitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-SubmitButton.Font = Enum.Font.GothamBold
-SubmitButton.TextSize = 16
-SubmitButton.AutoButtonColor = false
-Instance.new("UICorner", SubmitButton).CornerRadius = UDim.new(0, 10)
+-- Input KeyBox
+local KeyBox = Instance.new("TextBox", MainFrame)
+KeyBox.Size = UDim2.new(0, 250, 0, 35)
+KeyBox.Position = UDim2.new(0.05, 0, 0.35, 0)
+KeyBox.PlaceholderText = "Nhập key tại đây..."
+KeyBox.Text = ""
+KeyBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+KeyBox.TextColor3 = Color3.new(1, 1, 1)
+KeyBox.Font = Enum.Font.Gotham
+KeyBox.TextSize = 16
+Instance.new("UICorner", KeyBox).CornerRadius = UDim.new(0, 6)
 
--- Get Key button
-local GetKeyButton = Instance.new("TextButton", MainFrame)
-GetKeyButton.Text = "🌐 Get Key"
-GetKeyButton.Size = UDim2.new(0.4, 0, 0, 28)
-GetKeyButton.Position = UDim2.new(0.54, 0, 0.65, 0)
-GetKeyButton.BackgroundColor3 = Color3.fromRGB(50, 200, 100)
-GetKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-GetKeyButton.Font = Enum.Font.GothamBold
-GetKeyButton.TextSize = 16
-GetKeyButton.AutoButtonColor = false
-Instance.new("UICorner", GetKeyButton).CornerRadius = UDim.new(0, 10)
+-- Get Key Button
+local GetKey = Instance.new("TextButton", MainFrame)
+GetKey.Size = UDim2.new(0, 100, 0, 35)
+GetKey.Position = UDim2.new(0.05, 0, 0.7, 0)
+GetKey.Text = "🌐 Get Key"
+GetKey.BackgroundColor3 = Color3.fromRGB(60, 100, 255)
+GetKey.TextColor3 = Color3.new(1,1,1)
+GetKey.Font = Enum.Font.Gotham
+GetKey.TextSize = 15
+Instance.new("UICorner", GetKey).CornerRadius = UDim.new(0, 6)
 
--- Success Message
-local SuccessLabel = Instance.new("TextLabel", ScreenGui)
-SuccessLabel.Size = UDim2.new(0, 200, 0, 40)
-SuccessLabel.Position = UDim2.new(0, -250, 0.1, 0)
-SuccessLabel.BackgroundTransparency = 1
-SuccessLabel.Text = "✅ Đúng key!"
-SuccessLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
-SuccessLabel.Font = Enum.Font.GothamBold
-SuccessLabel.TextSize = 24
-SuccessLabel.Visible = false
+GetKey.MouseButton1Click:Connect(function()
+	setclipboard("https://pastefy.app/bzBj4H06")
+	GetKey.Text = "📋 Copied!"
+	wait(1)
+	GetKey.Text = "🌐 Get Key"
+end)
 
--- Hover animation
-local function AnimateButton(button, colorHover, colorNormal)
-	button.MouseEnter:Connect(function()
-		TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = colorHover}):Play()
-	end)
-	button.MouseLeave:Connect(function()
-		TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = colorNormal}):Play()
-	end)
+-- Check Key Button
+local CheckKey = Instance.new("TextButton", MainFrame)
+CheckKey.Size = UDim2.new(0, 100, 0, 35)
+CheckKey.Position = UDim2.new(0.65, 0, 0.7, 0)
+CheckKey.Text = "✅ Check Key"
+CheckKey.BackgroundColor3 = Color3.fromRGB(60, 200, 100)
+CheckKey.TextColor3 = Color3.new(1,1,1)
+CheckKey.Font = Enum.Font.Gotham
+CheckKey.TextSize = 15
+Instance.new("UICorner", CheckKey).CornerRadius = UDim.new(0, 6)
+
+-- Notification Label
+local Notify = Instance.new("TextLabel", MainFrame)
+Notify.Size = UDim2.new(0, 0, 0, 40)
+Notify.Position = UDim2.new(-1, 0, 0.5, -20)
+Notify.BackgroundTransparency = 1
+Notify.Text = "✅ Key chính xác! Đang mở Hub..."
+Notify.TextColor3 = Color3.fromRGB(0, 255, 127)
+Notify.Font = Enum.Font.GothamBold
+Notify.TextScaled = true
+Notify.Visible = false
+
+-- Key system (24h)
+local DataStoreKey = "KhaHubKeyTime"
+local CorrectKey = "KHADEPTRAIVAILON100"
+
+-- Save time key used
+local function saveKeyTime()
+	if isfile and writefile then
+		writefile(DataStoreKey, tostring(os.time()))
+	end
 end
 
-AnimateButton(SubmitButton, Color3.fromRGB(0, 100, 200), Color3.fromRGB(0, 150, 255))
-AnimateButton(GetKeyButton, Color3.fromRGB(30, 150, 70), Color3.fromRGB(50, 200, 100))
+-- Load time key used
+local function loadKeyTime()
+	if isfile and readfile and isfile(DataStoreKey) then
+		return tonumber(readfile(DataStoreKey))
+	end
+	return nil
+end
 
--- Key
-local CorrectKey = "KHADEPTRAIVAILON100" --đổi key đây ku
+-- Check Key
+CheckKey.MouseButton1Click:Connect(function()
+	if KeyBox.Text == CorrectKey then
+		Notify.Visible = true
+		Notify.Position = UDim2.new(-1, 0, 0.2, 0)
+		Notify.Size = UDim2.new(0, 0, 0, 40)
 
-SubmitButton.MouseButton1Click:Connect(function()
-	-- Press effect
-	TweenService:Create(SubmitButton, TweenInfo.new(0.1), {Size = UDim2.new(0.4, 0, 0, 26)}):Play()
-	wait(0.05)
-	TweenService:Create(SubmitButton, TweenInfo.new(0.1), {Size = UDim2.new(0.4, 0, 0, 28)}):Play()
-
-	if TextBox.Text == CorrectKey then
-		-- Show success label with animation
-		SuccessLabel.Visible = true
-		SuccessLabel.Position = UDim2.new(0, -250, 0.1, 0)
-		SuccessLabel.Size = UDim2.new(0, 100, 0, 30)
-
-		local goalPos = UDim2.new(0.5, -100, 0.1, 0)
-		local goalSize = UDim2.new(0, 200, 0, 40)
-
-		local tween1 = TweenService:Create(SuccessLabel, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-			Position = goalPos,
-			Size = goalSize
+		local tween = TweenService:Create(Notify, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
+			Position = UDim2.new(0.1, 0, 0.2, 0),
+			Size = UDim2.new(0.8, 0, 0, 40)
 		})
-		tween1:Play()
+		tween:Play()
 
-		wait(1.5)
-		SuccessLabel.Visible = false
-		MainFrame:Destroy()
-		print("✅ Correct key! Run script here.")
+		saveKeyTime()
+		wait(2)
+		ScreenGui:Destroy()
+		-- Load main hub here
 		loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/boost%20speed_script.txt'))()
 	else
-		SubmitButton.Text = "❌ Sai Key"
-		wait(1)
-		SubmitButton.Text = "Check Key"
+		KeyBox.Text = ""
+		KeyBox.PlaceholderText = "❌ Sai key, thử lại!"
 	end
 end)
 
-GetKeyButton.MouseButton1Click:Connect(function()
-	setclipboard("https://pastefy.app/bzBj4H06")
-	GetKeyButton.Text = "📋 Copied!"
-	wait(1)
-	GetKeyButton.Text = "🌐 Get Key"
-end)
-
--- Show GUI with animation
-MainFrame.Visible = true
-MainFrame.Size = UDim2.new(0, 0, 0, 0)
-TweenService:Create(MainFrame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-	Size = UDim2.new(0, 350, 0, 220)
-}):Play()
+-- Auto check if key was saved within 24h
+local lastUsed = loadKeyTime()
+if lastUsed and os.time() - lastUsed < 86400 then
+	ScreenGui:Destroy()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/boost%20speed_script.txt'))()
+end
