@@ -261,11 +261,13 @@ RunService.RenderStepped:Connect(function()
 	if not statusText or not hum then return end
 
 	local ws = math.floor(hum.WalkSpeed + 0.5)
+	local jp = math.floor(hum.JumpPower + 0.5)
 	local boostColor = boostAktif and "<font color='rgb(0,255,0)'>ON</font>" or "<font color='rgb(255,0,0)'>OFF</font>"
 	local infJumpColor = infJumpActive and "<font color='rgb(0,255,0)'>ON</font>" or "<font color='rgb(255,0,0)'>OFF</font>"
 	local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
 
 	statusText.Text = "Tốc độ chạy hiện tại: " .. ws ..
+		"\nJump Power hiện tại: " .. jp ..
 		"\nTrạng thái của boost: " .. boostColor ..
 		"\nThời gian boost: " .. boostTime .. " giây" ..
 		"\nInf Jump: " .. infJumpColor ..
@@ -289,7 +291,7 @@ createInfJumpGUI()
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 
--- Kiểm tra GUI đã tồn tại chưa, nếu có thì xóa cũ
+-- Xóa GUI cũ nếu có
 if CoreGui:FindFirstChild("ThongBaoCamOn") then
 	CoreGui.ThongBaoCamOn:Destroy()
 end
@@ -302,6 +304,14 @@ gui.IgnoreGuiInset = true
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = CoreGui
 
+-- Âm thanh thông báo
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://17582299860"
+sound.Volume = 1
+sound.PlayOnRemove = true -- Phát khi bị Remove (trick để không delay)
+sound.Parent = gui
+sound:Destroy() -- Phát ngay
+
 -- Frame chính
 local frame = Instance.new("Frame")
 frame.AnchorPoint = Vector2.new(1, 1)
@@ -309,14 +319,15 @@ frame.Position = UDim2.new(1, -10, 1, -10)
 frame.Size = UDim2.new(0, 250, 0, 100)
 frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 frame.BorderSizePixel = 0
-frame.BackgroundTransparency = 0.2
+frame.BackgroundTransparency = 1 -- ban đầu ẩn
 frame.Parent = gui
 
--- Outline
+-- Hiệu ứng Outline
 local uiStroke = Instance.new("UIStroke")
 uiStroke.Color = Color3.fromRGB(255, 255, 0)
 uiStroke.Thickness = 2
 uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Transparency = 1
 uiStroke.Parent = frame
 
 -- UICorner
@@ -334,6 +345,7 @@ title.BackgroundTransparency = 1
 title.Size = UDim2.new(1, -20, 0, 30)
 title.Position = UDim2.new(0, 10, 0, 5)
 title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextTransparency = 1
 title.Parent = frame
 
 -- Nội dung
@@ -346,15 +358,11 @@ content.BackgroundTransparency = 1
 content.Size = UDim2.new(1, -20, 0, 40)
 content.Position = UDim2.new(0, 10, 0, 40)
 content.TextXAlignment = Enum.TextXAlignment.Left
+content.TextTransparency = 1
 content.Parent = frame
 
--- Animation hiện
-frame.BackgroundTransparency = 1
-uiStroke.Transparency = 1
-title.TextTransparency = 1
-content.TextTransparency = 1
-
-TweenService:Create(frame, TweenInfo.new(0.3), {BackgroundTransparency = 0.2}):Play()
+-- Animation hiện (fade in nhanh)
+TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0.2}):Play()
 TweenService:Create(uiStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
 TweenService:Create(title, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
 TweenService:Create(content, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
