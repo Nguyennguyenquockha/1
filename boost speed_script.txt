@@ -5,26 +5,23 @@ local UserInputService = game:GetService("UserInputService")
 local Stats = game:GetService("Stats")
 local player = Players.LocalPlayer
 
-local boostGui
+local boostGui, boostBtn
 local enforceConnection
-local boostBtn
 local boostAktif = false
 local boostTime = 0
+local infJumpTime = 0
+local infJumpActive = false
 local DEFAULT_WALKSPEED = 16
 
--- Kéo GUI được cả Mobile + PC
+local statusText -- Sẽ gán sau
+
+-- Kéo GUI được
 local function enableDragging(frame)
 	local dragging, dragInput, dragStart, startPos
 
 	local function update(input)
 		local delta = input.Position - dragStart
-		local newPosition = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
-		frame.Position = newPosition
+		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 	end
 
 	frame.InputBegan:Connect(function(input)
@@ -104,7 +101,7 @@ local function buatBoostGUI()
 	boostBtn.BackgroundColor3 = Color3.fromRGB(0, 85, 170)
 	boostBtn.TextColor3 = Color3.new(1, 1, 1)
 	boostBtn.TextStrokeColor3 = Color3.new(0, 0, 0)
-    boostBtn.TextStrokeTransparency = 0
+	boostBtn.TextStrokeTransparency = 0
 	boostBtn.Font = Enum.Font.FredokaOne
 	boostBtn.TextSize = 17
 	boostBtn.BorderSizePixel = 0
@@ -130,20 +127,20 @@ local function buatBoostGUI()
 	enableDragging(boostBtn)
 
 	local statusFrame = Instance.new("Frame", boostGui)
-	statusFrame.Size = UDim2.new(0, 260, 0, 95)
+	statusFrame.Size = UDim2.new(0, 255, 0, 111)
 	statusFrame.Position = UDim2.new(1, -250, 0, 10)
 	statusFrame.AnchorPoint = Vector2.new(0, 0)
 	statusFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-	
-	local bgImage = Instance.new("ImageLabel")
-    bgImage.Size = UDim2.new(1, 0, 1, 0)
-    bgImage.Position = UDim2.new(0, 0, 0, 0)
-    bgImage.BackgroundTransparency = 1
-    bgImage.Image = "rbxassetid://18878365966"
-    bgImage.ZIndex = 0
-    bgImage.Parent = statusFrame
 	statusFrame.BackgroundTransparency = 0.2
 	statusFrame.BorderSizePixel = 0
+
+	local bgImage = Instance.new("ImageLabel")
+	bgImage.Size = UDim2.new(1, 0, 1, 0)
+	bgImage.Position = UDim2.new(0, 0, 0, 0)
+	bgImage.BackgroundTransparency = 1
+	bgImage.Image = "rbxassetid://18878365966"
+	bgImage.ZIndex = 0
+	bgImage.Parent = statusFrame
 
 	local corner2 = Instance.new("UICorner")
 	corner2.CornerRadius = UDim.new(0, 6)
@@ -156,65 +153,32 @@ local function buatBoostGUI()
 	stroke2.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	stroke2.Parent = statusFrame
 
-	local statusText = Instance.new("TextLabel", statusFrame)
+	statusText = Instance.new("TextLabel", statusFrame)
 	statusText.Size = UDim2.new(1, -10, 1, -10)
 	statusText.Position = UDim2.new(0, 5, 0, 5)
 	statusText.BackgroundTransparency = 1
 	statusText.TextColor3 = Color3.new(1, 1, 1)
 	statusText.TextStrokeColor3 = Color3.new(0, 0, 0)
-    statusText.TextStrokeTransparency = 0
+	statusText.TextStrokeTransparency = 0
 	statusText.Font = Enum.Font.FredokaOne
-	statusText.TextSize = 14
+	statusText.TextSize = 15
 	statusText.TextXAlignment = Enum.TextXAlignment.Left
 	statusText.TextYAlignment = Enum.TextYAlignment.Top
 	statusText.RichText = true
 	statusText.ZIndex = 1
-	statusText.Text = "Tốc độ chạy hiện tại: 16\nTrạng thái của boost: OFF\nThời gian boost: 0 giây\nPing: 0 ms\nFPS: 0"
+	statusText.Text = "..."
 
 	enableDragging(statusFrame)
 
-	local fps = 0
-	local lastTime = tick()
-	local counter = 0
-
-	RunService.RenderStepped:Connect(function()
-		local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
-		if hum then
-			local ws = math.floor(hum.WalkSpeed + 0.5)
-			local boostColor = boostAktif and "<font color='rgb(0,255,0)'>ON</font>" or "<font color='rgb(255,0,0)'>OFF</font>"
-			local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
-			statusText.Text = "Tốc độ chạy hiện tại: " .. ws ..
-				"\nTrạng thái của boost: " .. boostColor ..
-				"\nThời gian boost: " .. boostTime .. " giây" ..
-				"\nPing: " .. ping .. " ms" ..
-				"\nFPS: " .. fps
-		end
-
-		counter += 1
-		if tick() - lastTime >= 1 then
-			fps = counter
-			counter = 0
-			lastTime = tick()
-			if boostAktif then
-				boostTime += 1
-			end
-		end
-	end)
-
+	-- Gán sự kiện click ở đây
 	boostBtn.MouseButton1Click:Connect(function()
 		clickSound:Play()
 		boostAktif = not boostAktif
 
-		local tweenUp = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-			Size = UDim2.new(0, 106, 0, 38)
-		})
-		local tweenDown = TweenService:Create(boostBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-			Size = UDim2.new(0, 96, 0, 32)
-		})
+		local tweenUp = TweenService:Create(boostBtn, TweenInfo.new(0.1), { Size = UDim2.new(0, 106, 0, 38) })
+		local tweenDown = TweenService:Create(boostBtn, TweenInfo.new(0.1), { Size = UDim2.new(0, 96, 0, 32) })
 		tweenUp:Play()
-		tweenUp.Completed:Connect(function()
-			tweenDown:Play()
-		end)
+		tweenUp.Completed:Connect(function() tweenDown:Play() end)
 
 		if boostAktif then
 			boostBtn.Text = "Boost ON"
@@ -227,8 +191,191 @@ local function buatBoostGUI()
 	end)
 end
 
-buatBoostGUI()
+local function createInfJumpGUI()
+	local infJumpGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+	infJumpGui.Name = "InfJumpGUI"
+	infJumpGui.ResetOnSpawn = false
 
+	local infJumpBtn = Instance.new("TextButton", infJumpGui)
+	infJumpBtn.Size = UDim2.new(0, 120, 0, 40)
+	infJumpBtn.Position = UDim2.new(0.5, -150, 1, -70)
+	infJumpBtn.AnchorPoint = Vector2.new(0.5, 1)
+	infJumpBtn.BackgroundColor3 = Color3.fromRGB(90, 60, 200)
+	infJumpBtn.TextColor3 = Color3.new(1, 1, 1)
+	infJumpBtn.TextStrokeColor3 = Color3.new(0, 0, 0)
+	infJumpBtn.TextStrokeTransparency = 0
+	infJumpBtn.Font = Enum.Font.FredokaOne
+	infJumpBtn.TextSize = 18
+	infJumpBtn.BorderSizePixel = 0
+	infJumpBtn.AutoButtonColor = false
+	infJumpBtn.Text = "Inf Jump OFF"
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = infJumpBtn
+
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(255, 215, 0)
+	stroke.Thickness = 2
+	stroke.Transparency = 0.1
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+	stroke.Parent = infJumpBtn
+
+	local clickSound = Instance.new("Sound")
+	clickSound.SoundId = "rbxassetid://9080070218"
+	clickSound.Volume = 1
+	clickSound.Parent = infJumpBtn
+
+	enableDragging(infJumpBtn)
+
+	UserInputService.JumpRequest:Connect(function()
+		if infJumpActive then
+			local char = player.Character
+			local hum = char and char:FindFirstChildOfClass("Humanoid")
+			if hum then
+				hum:ChangeState(Enum.HumanoidStateType.Jumping)
+			end
+		end
+	end)
+
+	infJumpBtn.MouseButton1Click:Connect(function()
+		clickSound:Play()
+		infJumpActive = not infJumpActive
+
+		local tweenUp = TweenService:Create(infJumpBtn, TweenInfo.new(0.1), { Size = UDim2.new(0, 130, 0, 46) })
+		local tweenDown = TweenService:Create(infJumpBtn, TweenInfo.new(0.1), { Size = UDim2.new(0, 120, 0, 40) })
+		tweenUp:Play()
+		tweenUp.Completed:Connect(function() tweenDown:Play() end)
+
+		infJumpBtn.Text = infJumpActive and "Inf Jump ON" or "Inf Jump OFF"
+		if not infJumpActive then infJumpTime = 0 end
+	end)
+end
+
+-- Cập nhật GUI mỗi frame
+local fps, lastTime, counter = 0, tick(), 0
+
+RunService.RenderStepped:Connect(function()
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	if not statusText or not hum then return end
+
+	local ws = math.floor(hum.WalkSpeed + 0.5)
+	local boostColor = boostAktif and "<font color='rgb(0,255,0)'>ON</font>" or "<font color='rgb(255,0,0)'>OFF</font>"
+	local infJumpColor = infJumpActive and "<font color='rgb(0,255,0)'>ON</font>" or "<font color='rgb(255,0,0)'>OFF</font>"
+	local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
+
+	statusText.Text = "Tốc độ chạy hiện tại: " .. ws ..
+		"\nTrạng thái của boost: " .. boostColor ..
+		"\nThời gian boost: " .. boostTime .. " giây" ..
+		"\nInf Jump: " .. infJumpColor ..
+		"\nThời gian Inf Jump: " .. infJumpTime .. " giây" ..
+		"\nPing: " .. ping .. " ms" ..
+		"\nFPS: " .. fps
+
+	counter += 1
+	if tick() - lastTime >= 1 then
+		fps = counter
+		counter = 0
+		lastTime = tick()
+		if boostAktif then boostTime += 1 end
+		if infJumpActive then infJumpTime += 1 end
+	end
+end)
+
+buatBoostGUI()
+createInfJumpGUI()
+
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+
+-- Kiểm tra GUI đã tồn tại chưa, nếu có thì xóa cũ
+if CoreGui:FindFirstChild("ThongBaoCamOn") then
+	CoreGui.ThongBaoCamOn:Destroy()
+end
+
+-- Tạo ScreenGui
+local gui = Instance.new("ScreenGui")
+gui.Name = "ThongBaoCamOn"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Parent = CoreGui
+
+-- Frame chính
+local frame = Instance.new("Frame")
+frame.AnchorPoint = Vector2.new(1, 1)
+frame.Position = UDim2.new(1, -10, 1, -10)
+frame.Size = UDim2.new(0, 250, 0, 100)
+frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+frame.BorderSizePixel = 0
+frame.BackgroundTransparency = 0.2
+frame.Parent = gui
+
+-- Outline
+local uiStroke = Instance.new("UIStroke")
+uiStroke.Color = Color3.fromRGB(255, 255, 0)
+uiStroke.Thickness = 2
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Parent = frame
+
+-- UICorner
+local uicorner = Instance.new("UICorner")
+uicorner.CornerRadius = UDim.new(0, 8)
+uicorner.Parent = frame
+
+-- Tiêu đề
+local title = Instance.new("TextLabel")
+title.Text = "🔔 Thông Báo"
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Size = UDim2.new(1, -20, 0, 30)
+title.Position = UDim2.new(0, 10, 0, 5)
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = frame
+
+-- Nội dung
+local content = Instance.new("TextLabel")
+content.Text = "Cảm ơn bạn đã dùng script!"
+content.Font = Enum.Font.Gotham
+content.TextSize = 16
+content.TextColor3 = Color3.fromRGB(200, 255, 200)
+content.BackgroundTransparency = 1
+content.Size = UDim2.new(1, -20, 0, 40)
+content.Position = UDim2.new(0, 10, 0, 40)
+content.TextXAlignment = Enum.TextXAlignment.Left
+content.Parent = frame
+
+-- Animation hiện
+frame.BackgroundTransparency = 1
+uiStroke.Transparency = 1
+title.TextTransparency = 1
+content.TextTransparency = 1
+
+TweenService:Create(frame, TweenInfo.new(0.3), {BackgroundTransparency = 0.2}):Play()
+TweenService:Create(uiStroke, TweenInfo.new(0.3), {Transparency = 0}):Play()
+TweenService:Create(title, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
+TweenService:Create(content, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
+
+-- Chờ rồi ẩn Text trước
+task.delay(2, function()
+	TweenService:Create(title, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+	TweenService:Create(content, TweenInfo.new(0.2), {TextTransparency = 1}):Play()
+
+	-- Ẩn GUI sau
+	task.delay(0.3, function()
+		TweenService:Create(frame, TweenInfo.new(0.2), {BackgroundTransparency = 1}):Play()
+		TweenService:Create(uiStroke, TweenInfo.new(0.2), {Transparency = 1}):Play()
+
+		task.delay(0.2, function()
+			gui:Destroy()
+		end)
+	end)
+end)
+
+-- Reset boost khi nhân vật chết
 Players.LocalPlayer.CharacterAdded:Connect(function()
 	if boostAktif then
 		startEnforceSpeed()
