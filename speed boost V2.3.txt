@@ -1,0 +1,130 @@
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
+
+local fastKeys = {
+    "KHaHUBkeySCriPT6382628",
+    "NINHxauTrAIVai10284638273",
+    "QuoCkHaDeptRAIHEHe2937"
+}
+
+local normalLinks = {
+    "https://pastefy.app/ZvTSSQSq",
+    "https://pastefy.app/Lj4wHWED",
+    "https://pastefy.app/X1ZFFdZu"
+}
+
+local selectedKey
+local userKey = ""
+local keyType = ""
+local keyGeneratedTime = 0
+
+-- thời gian hiệu lực (giây)
+local FAST_KEY_DURATION = 12 * 60 * 60 -- 12 giờ
+local NORMAL_KEY_DURATION = 35 * 60 * 60 -- 35 giờ
+
+-- UI
+local Window = OrionLib:MakeWindow({
+    Name = "Kha Hub - Get Key System",
+    HidePremium = false,
+    SaveConfig = false,
+    ConfigFolder = "KhaGetKey"
+})
+
+local Tab = Window:MakeTab({
+    Name = "Get Key System",
+    Icon = "rbxassetid://7733964641",
+    PremiumOnly = false
+})
+
+Tab:AddParagraph("🎯 Hệ thống Get Key", "Chọn loại key, lấy link hoặc key, nhập và kiểm tra.")
+
+-- Fast Key
+Tab:AddButton({
+    Name = "⚡ Get Fast Key (12H)",
+    Callback = function()
+        local index = math.random(1, #fastKeys)
+        selectedKey = fastKeys[index]
+        keyType = "fast"
+        keyGeneratedTime = tick()
+        setclipboard(selectedKey)
+        OrionLib:MakeNotification({
+            Name = "FAST KEY",
+            Content = "Đã sao chép Fast Key!\nHiệu lực: 12 giờ\nKey: " .. selectedKey,
+            Image = "rbxassetid://7733964641",
+            Time = 6
+        })
+    end
+})
+
+-- Normal Key
+Tab:AddButton({
+    Name = "📄 Get Normal Key (35H)",
+    Callback = function()
+        local index = math.random(1, #normalLinks)
+        selectedKey = fastKeys[index] -- key giống fastKeys
+        keyType = "normal"
+        keyGeneratedTime = tick()
+        setclipboard(normalLinks[index])
+        OrionLib:MakeNotification({
+            Name = "NORMAL KEY",
+            Content = "Đã sao chép link lấy key!\nHiệu lực: 35 giờ\nLink: " .. normalLinks[index],
+            Image = "rbxassetid://7733964641",
+            Time = 6
+        })
+    end
+})
+
+-- Nhập key
+Tab:AddTextbox({
+    Name = "🔑 Nhập key của bạn",
+    Default = "",
+    TextDisappear = false,
+    Callback = function(value)
+        userKey = value
+    end
+})
+
+-- Check key
+Tab:AddButton({
+    Name = "✅ Check Key",
+    Callback = function()
+        local currentTime = tick()
+        local expired = false
+
+        if keyType == "fast" and (currentTime - keyGeneratedTime > FAST_KEY_DURATION) then
+            expired = true
+        elseif keyType == "normal" and (currentTime - keyGeneratedTime > NORMAL_KEY_DURATION) then
+            expired = true
+        end
+
+        if expired then
+            OrionLib:MakeNotification({
+                Name = "Hết hiệu lực!",
+                Content = "Key đã hết hạn. Vui lòng Get Key lại.",
+                Image = "rbxassetid://7733964641",
+                Time = 4
+            })
+            return
+        end
+
+        if userKey == selectedKey then
+            OrionLib:MakeNotification({
+                Name = "Đúng key!",
+                Content = "Đang tải script...",
+                Image = "rbxassetid://7733964641",
+                Time = 3
+            })
+            task.wait(0.5)
+            OrionLib:Destroy()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/boost%20speed_script.txt"))()
+        else
+            OrionLib:MakeNotification({
+                Name = "Sai Key!",
+                Content = "Key không hợp lệ, thử lại.",
+                Image = "rbxassetid://7733964641",
+                Time = 3
+            })
+        end
+    end
+})
+
+OrionLib:Init()
