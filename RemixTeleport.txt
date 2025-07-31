@@ -1,0 +1,329 @@
+-- Teleport GUI v1.1 (Small Version + Animation)
+-- Đặt LocalScript trong StarterPlayerScripts
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+
+local function new(inst, props, children)
+	local obj = Instance.new(inst)
+	for k,v in pairs(props or {}) do obj[k]=v end
+	for _,c in ipairs(children or {}) do c.Parent = obj end
+	return obj
+end
+
+local function tween(obj, props, time, easing)
+	return TweenService:Create(obj, TweenInfo.new(time or 0.25, easing or Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
+end
+
+local gui = new("ScreenGui", {Name="TPtoPlayerGUI", ResetOnSpawn=false, IgnoreGuiInset=true})
+gui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local frame = new("Frame", {
+	Name="ListFrame",
+	AnchorPoint=Vector2.new(0.5,0.5),
+	Position=UDim2.fromScale(0.5,0.5),
+	Size=UDim2.new(0,250,0,320),
+	BackgroundColor3=Color3.fromRGB(20,22,30),
+	BackgroundTransparency=0.15,
+	Active=true
+}, {
+	new("UICorner",{CornerRadius=UDim.new(0,12)}),
+	new("UIStroke",{Thickness=2,ApplyStrokeMode=Enum.ApplyStrokeMode.Border,Color=Color3.fromRGB(120,130,255),Transparency=0.2})
+})
+frame.Parent = gui
+
+local title = new("TextLabel",{
+	Parent=frame,
+	Size=UDim2.new(1, -16, 0, 28),
+	Position=UDim2.new(0,8,0,8),
+	BackgroundTransparency=1,
+	Text="Teleport đến người chơi",
+	Font=Enum.Font.GothamBold,
+	TextSize=16,
+	TextColor3=Color3.fromRGB(235,235,245),
+	TextXAlignment=Enum.TextXAlignment.Left
+})
+
+local modeBar = new("Frame",{
+	Parent=frame,
+	Size=UDim2.new(1,-16,0,32),
+	Position=UDim2.new(0,8,0,40),
+	BackgroundTransparency=1,
+}, {
+	new("UIListLayout", {FillDirection=Enum.FillDirection.Horizontal, Padding=UDim.new(0,6), HorizontalAlignment=Enum.HorizontalAlignment.Center}),
+	new("UIPadding", {PaddingLeft=UDim.new(0,2), PaddingRight=UDim.new(0,2)})
+})
+
+local function pillButton(txt, bg)
+	local btn = new("TextButton",{
+		Size=UDim2.new(0,78,1,0),
+		BackgroundColor3=bg or Color3.fromRGB(35,38,50),
+		BackgroundTransparency=0.1,
+		Text=txt,
+		Font=Enum.Font.GothamBold,
+		TextSize=13,
+		TextColor3=Color3.fromRGB(240,240,240),
+		AutoButtonColor=true
+	},{
+		new("UICorner",{CornerRadius=UDim.new(0,10)}),
+		new("UIStroke",{Thickness=1,Transparency=0.3,Color=Color3.fromRGB(120,130,255)})
+	})
+	btn.MouseEnter:Connect(function()
+		tween(btn, {BackgroundColor3 = Color3.fromRGB(80,120,180)}, 0.15)
+	end)
+	btn.MouseLeave:Connect(function()
+		tween(btn, {BackgroundColor3 = bg or Color3.fromRGB(35,38,50)}, 0.15)
+	end)
+	return btn
+end
+
+local btnModeNoAuto = pillButton("No auto")
+local btnModeOff    = pillButton("Tắt")
+local btnModeAuto   = pillButton("Auto teleport")
+btnModeNoAuto.Parent = modeBar
+btnModeOff.Parent    = modeBar
+btnModeAuto.Parent   = modeBar
+
+local list = new("ScrollingFrame",{
+	Parent=frame,
+	Size=UDim2.new(1,-16,1,-(40+32+16)),
+	Position=UDim2.new(0,8,0,80),
+	BackgroundColor3=Color3.fromRGB(15,16,22),
+	BackgroundTransparency=0.25,
+	BorderSizePixel=0,
+	ScrollBarThickness=6,
+	CanvasSize=UDim2.new(0,0,0,0)
+},{
+	new("UICorner",{CornerRadius=UDim.new(0,10)}),
+	new("UIListLayout",{Padding=UDim.new(0,5), SortOrder=Enum.SortOrder.Name})
+})
+
+local function createPlayerButton(plr)
+	local btn = new("TextButton",{
+		Name = (plr.DisplayName or plr.Name) .. "@" .. plr.UserId,
+		Parent=list,
+		Size=UDim2.new(1,-8,0,28),
+		BackgroundColor3=Color3.fromRGB(35,38,50),
+		BackgroundTransparency=0.1,
+		Text = string.format("%s (@%s)", plr.DisplayName or plr.Name, plr.Name),
+		Font=Enum.Font.Gotham,
+		TextSize=13,
+		TextColor3=Color3.fromRGB(240,240,240),
+		AutoButtonColor=true
+	},{
+		new("UICorner",{CornerRadius=UDim.new(0,8)}),
+		new("UIStroke",{Thickness=1,Transparency=0.3,Color=Color3.fromRGB(120,130,255)})
+	})
+	btn.MouseEnter:Connect(function()
+		tween(btn, {BackgroundColor3 = Color3.fromRGB(80,90,120)}, 0.15)
+	end)
+	btn.MouseLeave:Connect(function()
+		tween(btn, {BackgroundColor3 = Color3.fromRGB(35,38,50)}, 0.15)
+	end)
+	return btn
+end
+
+local confirm = new("Frame",{
+	Name="Confirm",
+	Parent=gui,
+	Visible=false,
+	AnchorPoint=Vector2.new(0.5,0.5),
+	Position=UDim2.fromScale(0.5,0.5),
+	Size=UDim2.new(0,240,0,130),
+	BackgroundColor3=Color3.fromRGB(25,27,36),
+	BackgroundTransparency=1
+},{
+	new("UICorner",{CornerRadius=UDim.new(0,10)}),
+	new("UIStroke",{Thickness=2,Color=Color3.fromRGB(255,200,120),Transparency=0.2})
+})
+
+local confirmText = new("TextLabel",{
+	Parent=confirm,
+	Size=UDim2.new(1,-16,0,55),
+	Position=UDim2.new(0,8,0,10),
+	BackgroundTransparency=1,
+	Text="Bạn muốn teleport đến người chơi này không?",
+	Font=Enum.Font.GothamSemibold,
+	TextSize=14,
+	TextWrapped=true,
+	TextColor3=Color3.fromRGB(245,245,245),
+	TextTransparency = 1
+})
+
+local btnYes = new("TextButton",{
+	Parent=confirm,
+	Size=UDim2.new(0.5,-12,0,32),
+	Position=UDim2.new(0,8,1,-42),
+	BackgroundColor3=Color3.fromRGB(60,200,120),
+	Text="Teleport",
+	Font=Enum.Font.GothamBold,
+	TextSize=15,
+	TextColor3=Color3.fromRGB(20,20,20),
+	BackgroundTransparency = 1
+},{
+	new("UICorner",{CornerRadius=UDim.new(0,8)})
+})
+
+local btnNo = new("TextButton",{
+	Parent=confirm,
+	Size=UDim2.new(0.5,-12,0,32),
+	Position=UDim2.new(0.5,4,1,-42),
+	BackgroundColor3=Color3.fromRGB(200,80,80),
+	Text="Không",
+	Font=Enum.Font.GothamBold,
+	TextSize=15,
+	TextColor3=Color3.fromRGB(250,250,250),
+	BackgroundTransparency = 1
+},{
+	new("UICorner",{CornerRadius=UDim.new(0,8)})
+})
+
+local mode = "noauto"
+local targetUserId = nil
+local autoConn
+
+local function paintModes()
+	local sel = Color3.fromRGB(90,180,255)
+	local idle= Color3.fromRGB(35,38,50)
+	tween(btnModeNoAuto, {BackgroundColor3 = (mode=="noauto") and sel or idle}, 0.2)
+	tween(btnModeAuto,   {BackgroundColor3 = (mode=="auto") and sel or idle}, 0.2)
+	tween(btnModeOff,    {BackgroundColor3 = idle}, 0.2)
+end
+
+local function stopAuto()
+	if autoConn then autoConn:Disconnect() autoConn = nil end
+end
+
+local function tpOnceToUserId(uid)
+	local char = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart", 3)
+	if not hrp then return end
+	local targetPlr = Players:GetPlayerByUserId(uid)
+	if not targetPlr then return end
+	local tChar = targetPlr.Character
+	if not tChar then return end
+	local tHRP = tChar:FindFirstChild("HumanoidRootPart")
+	if not tHRP then return end
+	hrp.CFrame = tHRP.CFrame + Vector3.new(0,3,0)
+end
+
+local function startAutoFollow(uid)
+	stopAuto()
+	autoConn = RunService.Heartbeat:Connect(function()
+		pcall(function() tpOnceToUserId(uid) end)
+	end)
+end
+
+btnModeNoAuto.MouseButton1Click:Connect(function()
+	mode = "noauto" paintModes()
+end)
+btnModeOff.MouseButton1Click:Connect(function()
+	stopAuto()
+end)
+btnModeAuto.MouseButton1Click:Connect(function()
+	mode = "auto" paintModes()
+	if targetUserId then startAutoFollow(targetUserId) end
+end)
+
+local function refreshList()
+	for _,child in ipairs(list:GetChildren()) do
+		if child:IsA("TextButton") then child:Destroy() end
+	end
+	local players = Players:GetPlayers()
+	table.sort(players, function(a,b) return a.DisplayName < b.DisplayName end)
+	for _,plr in ipairs(players) do
+		if plr ~= LocalPlayer then
+			local btn = createPlayerButton(plr)
+			btn.MouseButton1Click:Connect(function()
+				targetUserId = plr.UserId
+				confirm.Visible = true
+				confirm.BackgroundTransparency = 1
+				confirmText.TextTransparency = 1
+				btnYes.BackgroundTransparency = 1
+				btnNo.BackgroundTransparency = 1
+
+				tween(confirm, {BackgroundTransparency = 0.1}, 0.2)
+				tween(confirmText, {TextTransparency = 0}, 0.2)
+				tween(btnYes, {BackgroundTransparency = 0}, 0.2)
+				tween(btnNo, {BackgroundTransparency = 0}, 0.2)
+			end)
+		end
+	end
+	task.defer(function()
+		local layout = list:FindFirstChildOfClass("UIListLayout")
+		if layout then
+			local total = 0
+			for _,c in ipairs(list:GetChildren()) do
+				if c:IsA("TextButton") then total += c.AbsoluteSize.Y + layout.Padding.Offset end
+			end
+			list.CanvasSize = UDim2.new(0,0,0, math.max(0,total))
+		end
+	end)
+end
+
+btnYes.MouseButton1Click:Connect(function()
+	if targetUserId then
+		if mode=="auto" then
+			tpOnceToUserId(targetUserId)
+			startAutoFollow(targetUserId)
+		else
+			stopAuto()
+			tpOnceToUserId(targetUserId)
+		end
+	end
+	tween(confirm, {BackgroundTransparency = 1}, 0.2)
+	tween(confirmText, {TextTransparency = 1}, 0.2)
+	tween(btnYes, {BackgroundTransparency = 1}, 0.2)
+	tween(btnNo, {BackgroundTransparency = 1}, 0.2)
+	task.delay(0.22, function()
+		confirm.Visible = false
+	end)
+end)
+btnNo.MouseButton1Click:Connect(function()
+	tween(confirm, {BackgroundTransparency = 1}, 0.2)
+	tween(confirmText, {TextTransparency = 1}, 0.2)
+	tween(btnYes, {BackgroundTransparency = 1}, 0.2)
+	tween(btnNo, {BackgroundTransparency = 1}, 0.2)
+	task.delay(0.22, function()
+		confirm.Visible = false
+	end)
+end)
+
+Players.PlayerAdded:Connect(refreshList)
+Players.PlayerRemoving:Connect(function(plr)
+	if targetUserId == plr.UserId then stopAuto() targetUserId = nil end
+	refreshList()
+end)
+
+do
+	local dragging = false
+	local dragStart, startPos
+	local function update(input)
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(
+			startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y
+		)
+	end
+	frame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = frame.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then dragging = false end
+			end)
+		end
+	end)
+	frame.InputChanged:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+			if dragging then update(input) end
+		end
+	end)
+end
+
+paintModes()
+refreshList()
