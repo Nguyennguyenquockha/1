@@ -3,20 +3,27 @@ local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Stats = game:GetService("Stats")
+local MarketplaceService = game:GetService("MarketplaceService")
 local player = Players.LocalPlayer
 
--- ===== Cấu hình =====
+local gameName = "Đang tải..."
+local gameId = game.PlaceId
+
+pcall(function()
+    local info = MarketplaceService:GetProductInfo(gameId)
+    gameName = info.Name
+end)
+
 local DEFAULT_WALKSPEED = 16
 local MIN_SPEED = 16
 local MAX_SPEED = 120
 local BOOST_SPEED = 42 -- tốc độ mặc định khi boost
 
--- ===== Biến trạng thái =====
+local espGui, espBtn
+local espActive = false
 local boostGui, boostBtn
 local enforceConnection
 local boostAktif = false
-local boostTime = 0
-local infJumpTime = 0
 local infJumpActive = false
 local statusText
 local speedGui -- GUI chỉnh tốc độ
@@ -24,12 +31,10 @@ local speedValueLabel -- hiển thị số
 local speedInput -- ô nhập số
 local sliderBar, sliderKnob -- thanh trượt
 
--- Đếm click mở GUI tốc độ
 local multiClickCount = 0
 local firstClickAt = 0
-local MULTI_CLICK_WINDOW = 1.2 -- 1.2 giây để bấm 5 lần
+local MULTI_CLICK_WINDOW = 1.2 -- 1.2 giây để bấm 4 lần
 
--- ===== Kéo GUI =====
 local function enableDragging(frame)
 	local dragging, dragInput, dragStart, startPos
 	local function update(input)
@@ -299,7 +304,7 @@ local function buatBoostGUI()
 	enableDragging(boostBtn)
 
 	local statusFrame = Instance.new("Frame", boostGui)
-	statusFrame.Size = UDim2.new(0, 250, 0, 136)
+	statusFrame.Size = UDim2.new(0, 260, 0, 138)
 	statusFrame.Position = UDim2.new(1, -250, 0, 10)
 	statusFrame.AnchorPoint = Vector2.new(0, 0)
 	statusFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -383,7 +388,7 @@ local function buatBoostGUI()
 		else
 			multiClickCount += 1
 		end
-		if multiClickCount >= 5 then
+		if multiClickCount >= 4 then
 			multiClickCount = 0
 			firstClickAt = 0
 			toggleSpeedGUI()
@@ -439,8 +444,141 @@ local function createInfJumpGUI()
 		local tweenDown = TweenService:Create(infJumpBtn, TweenInfo.new(0.1), { Size = UDim2.new(0, 120, 0, 40) })
 		tweenUp:Play(); tweenUp.Completed:Connect(function() tweenDown:Play() end)
 		infJumpBtn.Text = infJumpActive and "Inf Jump ON" or "Inf Jump OFF"
-		if not infJumpActive then infJumpTime = 0 end
 	end)
+end
+
+local espConnections = {}
+
+local function clearESP()
+    for _, v in ipairs(Players:GetPlayers()) do
+        if v.Character then
+            local head = v.Character:FindFirstChild("Head")
+            if head and head:FindFirstChild("KhaESPText") then
+                head.KhaESPText:Destroy()
+            end
+        end
+    end
+    for _, v in ipairs(espConnections) do
+        if v.conn then v.conn:Disconnect() end
+    end
+    table.clear(espConnections)
+end
+
+local function createESP(plr)
+    if plr == player or not plr.Character then return end
+    local char = plr.Character
+    local head = char:FindFirstChild("Head")
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not head or not humanoid then return end
+
+    -- Text hiển thị tên & máu
+    local bill = Instance.new("BillboardGui")
+    bill.Name = "KhaESPText"
+    bill.Size = UDim2.new(0, 250, 0, 30)
+    bill.Adornee = head
+    bill.AlwaysOnTop = true
+    bill.Parent = head
+
+    local nameLabel = Instance.new("TextLabel", bill)
+    nameLabel.Size = UDim2.new(1, 0, 1, 0)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    nameLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    nameLabel.TextStrokeTransparency = 0
+    nameLabel.Font = Enum.Font.FredokaOne
+    nameLabel.TextSize = 14
+
+    local conn = RunService.Heartbeat:Connect(function()
+        if humanoid and humanoid.Parent then
+            local health = math.floor(humanoid.Health)
+            local maxHealth = math.floor(humanoid.MaxHealth)
+            nameLabel.Text = string.format("Tên: %s | Máu: %d/%d", plr.Name, health, maxHealth)
+        end
+    end)
+
+    table.insert(espConnections, {conn = conn})
+end
+
+local function updateAllESP()
+    clearESP()
+    if not espActive then return end
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= player then
+            createESP(plr)
+        end
+    end
+end
+
+-- Luôn theo dõi người mới vào/respawn
+Players.PlayerAdded:Connect(function(plr)
+    if espActive then
+        plr.CharacterAdded:Connect(function()
+            task.wait(0.5)
+            createESP(plr)
+        end)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function()
+    updateAllESP()
+end)
+
+-- ===== Tạo ESP GUI =====
+local function createESPGUI()
+    local pg = player:WaitForChild("PlayerGui")
+    local espGui = Instance.new("ScreenGui", pg)
+    espGui.Name = "EspGUI"
+    espGui.ResetOnSpawn = false
+
+    local espBtn = Instance.new("TextButton", espGui)
+    espBtn.Size = UDim2.new(0, 96, 0, 32)
+    espBtn.Position = UDim2.new(0.5, 0, 1, -120)
+    espBtn.AnchorPoint = Vector2.new(0.5, 1)
+    espBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    espBtn.TextColor3 = Color3.new(1, 1, 1)
+    espBtn.TextStrokeColor3 = Color3.new(0, 0, 0)
+    espBtn.TextStrokeTransparency = 0
+    espBtn.Font = Enum.Font.FredokaOne
+    espBtn.TextSize = 17
+    espBtn.BorderSizePixel = 0
+    espBtn.AutoButtonColor = false
+    espBtn.Text = "ESP OFF"
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 10)
+    corner.Parent = espBtn
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(0, 255, 0)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.1
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Parent = espBtn
+
+    local clickSound = Instance.new("Sound")
+    clickSound.SoundId = "rbxassetid://9080070218"
+    clickSound.Volume = 1
+    clickSound.Parent = espBtn
+
+    enableDragging(espBtn)
+
+    espBtn.MouseButton1Click:Connect(function()
+        clickSound:Play()
+        espActive = not espActive
+
+        if espActive then
+            espBtn.Text = "ESP ON"
+            updateAllESP()
+        else
+            espBtn.Text = "ESP OFF"
+            clearESP()
+        end
+    end)
+end
+
+-- ===== Màu chữ trạng thái ESP giống boost/inf jump =====
+local function getESPColor()
+    return espActive and '<font color="rgb(0,255,0)">Bật</font>' or '<font color="rgb(255,0,0)">Tắt</font>'
 end
 
 -- ===== Cập nhật trạng thái mỗi frame =====
@@ -457,29 +595,28 @@ RunService.RenderStepped:Connect(function()
 	local ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue())
 
 	statusText.Text =
-		"Tốc độ chạy hiện tại: " .. ws ..
-		"\nJump Power hiện tại: " .. jp ..
-		"\nTrạng thái của boost: " .. boostColor ..
-		"\nTốc độ boost đặt: " .. BOOST_SPEED ..
-		"\nThời gian boost: " .. boostTime .. " giây" ..
-		"\nInf Jump: " .. infJumpColor ..
-		"\nThời gian Inf Jump: " .. infJumpTime .. " giây" ..
-		"\nPing: " .. ping .. " ms" ..
-		"\nFPS: " .. fps
+    "Tên game: " .. gameName .. " (" .. gameId .. ")" ..
+    "\nTốc độ chạy hiện tại: " .. ws ..
+    "\nJump Power hiện tại: " .. jp ..
+    "\nTrạng thái của boost: " .. boostColor ..
+    "\nTốc độ boost đặt: " .. BOOST_SPEED ..
+    "\nInf Jump: " .. infJumpColor ..
+    "\nESP: " .. getESPColor() ..
+    "\nPing: " .. ping .. " ms" ..
+    "\nFPS: " .. fps
 
 	counter += 1
 	if tick() - lastTime >= 1 then
 		fps = counter
 		counter = 0
 		lastTime = tick()
-		if boostAktif then boostTime += 1 end
-		if infJumpActive then infJumpTime += 1 end
 	end
 end)
 
 -- ===== Khởi tạo =====
 buatBoostGUI()
 createInfJumpGUI()
+createESPGUI()
 createSpeedConfigGUI() -- tạo sẵn (ẩn), mở bằng 5 lần click nhanh
 
 -- ===== Thông báo cảm ơn (giữ nguyên của bạn) =====
@@ -567,78 +704,8 @@ Players.LocalPlayer.CharacterAdded:Connect(function()
 	if boostAktif then startEnforceSpeed() else stopEnforceSpeed() end
 end)
 
--- ===== GUI Thông Tin Update =====
-local function createUpdateInfoGUI()
-    local updateGui = Instance.new("ScreenGui")
-    updateGui.Name = "UpdateInfoGUI"
-    updateGui.ResetOnSpawn = false
-    updateGui.Parent = player:WaitForChild("PlayerGui")
-
-    local frame = Instance.new("Frame", updateGui)
-    frame.Size = UDim2.new(0, 320, 0, 180)
-    frame.Position = UDim2.new(0.5, -160, 0.4, -90)
-    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BackgroundTransparency = 0.1
-    frame.BorderSizePixel = 0
-
-    local corner = Instance.new("UICorner", frame)
-    corner.CornerRadius = UDim.new(0, 8)
-
-    local stroke = Instance.new("UIStroke", frame)
-    stroke.Color = Color3.fromRGB(0, 200, 255)
-    stroke.Thickness = 1.5
-    stroke.Transparency = 0.1
-
-    enableDragging(frame)
-
-    -- Tiêu đề Update
-    local title = Instance.new("TextLabel", frame)
-    title.Size = UDim2.new(1, -40, 0, 30)
-    title.Position = UDim2.new(0, 10, 0, 8)
-    title.BackgroundTransparency = 1
-    title.Font = Enum.Font.FredokaOne
-    title.TextSize = 18
-    title.TextColor3 = Color3.new(1, 1, 1)
-    title.TextXAlignment = Enum.TextXAlignment.Left
-    title.Text = "Update 2.5"
-
-    -- Nút X để xóa GUI
-    local closeBtn = Instance.new("TextButton", frame)
-    closeBtn.Size = UDim2.new(0, 28, 0, 28)
-    closeBtn.Position = UDim2.new(1, -36, 0, 8)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    closeBtn.Text = "X"
-    closeBtn.Font = Enum.Font.FredokaOne
-    closeBtn.TextSize = 16
-    closeBtn.TextColor3 = Color3.new(1,1,1)
-    closeBtn.AutoButtonColor = true
-    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0, 6)
-    closeBtn.MouseButton1Click:Connect(function()
-        updateGui:Destroy() -- Xóa hẳn GUI Update
-    end)
-
-    -- Nội dung Update
-    local content = Instance.new("TextLabel", frame)
-    content.Size = UDim2.new(1, -20, 1, -50)
-    content.Position = UDim2.new(0, 10, 0, 45)
-    content.BackgroundTransparency = 1
-    content.Font = Enum.Font.Gotham
-    content.TextSize = 16
-    content.TextColor3 = Color3.fromRGB(220, 220, 220)
-    content.TextXAlignment = Enum.TextXAlignment.Left
-    content.TextYAlignment = Enum.TextYAlignment.Top
-    content.TextWrapped = true
-    content.RichText = true
-    content.Text = "- Thêm GUI thông tin update\n" ..
-                   "- Thêm GUI chỉnh sửa tốc độ\n" ..
-                   "- Add toggle mở/tắt GUI\n" ..
-                   "- Add thêm thứ khác (hết)"
-end
-
-createUpdateInfoGUI()
-
 -- ===== HIỆU ỨNG ẨN/HIỆN + ÂM THANH MASTER TOGGLE =====
-local TARGET_GUIS = { "BoostGUI", "InfJumpGUI", "UpdateInfoGUI" } -- KHÔNG đụng SpeedConfigGUI
+local TARGET_GUIS = { "BoostGUI", "InfJumpGUI", "EspGUI" } -- KHÔNG đụng SpeedConfigGUI
 
 local function recordOriginalTransparency(obj)
 	-- Lưu 1 lần các giá trị gốc
