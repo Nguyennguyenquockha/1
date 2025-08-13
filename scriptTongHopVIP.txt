@@ -1,0 +1,131 @@
+if game:GetService("CoreGui"):FindFirstChild("IntroGui") then
+    game:GetService("CoreGui").IntroGui:Destroy()
+end
+
+if _G.BoostSpeedScriptLoaded then return end
+_G.BoostSpeedScriptLoaded = true
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local player = Players.LocalPlayer
+
+-- GUI
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "IntroGui"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+
+-- Nền
+local bg = Instance.new("ImageLabel", gui)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundTransparency = 0.6
+bg.Image = "rbxassetid://138057999099280"
+bg.ImageTransparency = 0.2
+
+-- Hiệu ứng mờ nền
+local blur = Instance.new("BlurEffect", game.Lighting)
+blur.Size = 14
+
+-- Logo
+local logo = Instance.new("ImageLabel", gui)
+logo.Size = UDim2.new(0, 120, 0, 120)
+logo.Position = UDim2.new(0.5, -60, 0.35, -60)
+logo.BackgroundTransparency = 1
+logo.Image = "rbxassetid://138057999099280"
+logo.ScaleType = Enum.ScaleType.Fit
+logo.ImageTransparency = 1
+TweenService:Create(logo, TweenInfo.new(1.5, Enum.EasingStyle.Quad), {ImageTransparency = 0}):Play()
+
+-- Chữ KHA HUB
+local fullText = "KHA HUB"
+local spacing = 54 -- khoảng cách giữa các chữ
+local totalWidth = (#fullText * spacing) - (spacing - 60)
+local textHolder = Instance.new("Frame", gui)
+textHolder.BackgroundTransparency = 1
+textHolder.Size = UDim2.new(0, totalWidth, 0, 100)
+textHolder.Position = UDim2.new(0.5, -totalWidth/2, 0.5, -50)
+
+local function createLetter(char, i)
+	local label = Instance.new("TextLabel", textHolder)
+	label.Text = char
+	label.Size = UDim2.new(0, 60, 0, 70)
+	label.Position = UDim2.new(0, (i - 1) * spacing, 0, 0)
+	label.BackgroundTransparency = 1
+	label.TextScaled = true
+	label.Font = Enum.Font.FredokaOne
+	label.TextColor3 = Color3.fromHSV(i / #fullText, 0.9, 1)
+	label.TextTransparency = 1
+
+	-- Bóng đổ
+	local stroke = Instance.new("UIStroke", label)
+	stroke.Thickness = 2
+	stroke.Color = Color3.fromRGB(0, 0, 0)
+
+	-- Glow nhẹ 3D
+	for g = 1, 2 do
+		local glow = label:Clone()
+		glow.TextTransparency = 0.75
+		glow.TextColor3 = Color3.fromRGB(255, 255, 255)
+		glow.Position = label.Position + UDim2.new(0, g, 0, g)
+		glow.ZIndex = label.ZIndex - 1
+		glow.Parent = textHolder
+	end
+
+	-- Hiệu ứng xuất hiện mượt hơn
+	local appear = TweenService:Create(label, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, (i * 0.15)), {
+		TextTransparency = 0,
+		Size = UDim2.new(0, 65, 0, 75)
+	})
+	appear:Play()
+
+	-- Shimmer đổi màu liên tục
+	task.spawn(function()
+		while gui and gui.Parent do
+			local h, s, v = Color3.toHSV(label.TextColor3)
+			label.TextColor3 = Color3.fromHSV((tick() * 0.5 + i / 5) % 1, s, v)
+			task.wait(0.05)
+		end
+	end)
+end
+
+for i = 1, #fullText do
+	createLetter(fullText:sub(i, i), i)
+end
+
+-- Text "ĐANG KIỂM TRA..." (gõ + fade in từng ký tự)
+local checkingText = Instance.new("TextLabel", gui)
+checkingText.Size = UDim2.new(1, 0, 0, 50)
+checkingText.Position = UDim2.new(0, 0, 0.65, 0)
+checkingText.BackgroundTransparency = 1
+checkingText.Text = ""
+checkingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+checkingText.TextScaled = true
+checkingText.Font = Enum.Font.FredokaOne
+checkingText.TextTransparency = 0
+local stroke2 = Instance.new("UIStroke", checkingText)
+stroke2.Thickness = 1.5
+stroke2.Color = Color3.fromRGB(0, 0, 0)
+
+-- Gõ chậm + fade in từng ký tự
+task.spawn(function()
+	local msg = "ĐANG KIỂM TRA..."
+	for i = 1, #msg do
+		checkingText.Text = msg:sub(1, i)
+		checkingText.TextTransparency = 1
+		TweenService:Create(checkingText, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
+		task.wait(0.12) -- tốc độ gõ
+	end
+end)
+
+-- Fade in toàn GUI
+gui.Enabled = false
+task.delay(0.1, function()
+	gui.Enabled = true
+end)
+
+-- Load script chính sau 3.5 giây (dài hơn để đủ xem intro)
+task.delay(3.5, function()
+	if gui then gui:Destroy() end
+	if blur then blur:Destroy() end
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/tonghopNewUi.txt"))()
+end)
