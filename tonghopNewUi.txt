@@ -1,0 +1,218 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Kha script | Script tổng hợp",
+   Icon = 10670510697, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Update v1",
+   LoadingSubtitle = "by Sey_roblox",
+   ShowText = "Gui script", -- for mobile users to unhide rayfield, change if you'd like
+   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = false,
+   DisableBuildWarnings = false, -- Prevents Rayfield from warning when the script has a version mismatch with the interface
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil, -- Create a custom folder for your hub/game
+      FileName = "Big Hub"
+   },
+
+   Discord = {
+      Enabled = false, -- Prompt the user to join your Discord server if their executor supports it
+      Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ ABCD would be ABCD
+      RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+   },
+
+   KeySystem = false, -- Set this to true to use our key system
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided", -- Use this to tell the user how to get a key
+      FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+      SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+      GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+      Key = {"Hello"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+   }
+})
+
+--Danh sách các tab
+local GAGTab = Window:CreateTab("Grow a garden", 71106264262734) -- Title, Image
+local Section = GAGTab:CreateSection("Tất cả script grow a garden")
+local Paragraph = GAGTab:CreateParagraph({Title = "Thông Báo", Content = "Script đang trong giai đoạn thử nghiệm có thể sẽ update thêm hay khác vân vân, có thể sẽ thêm tính năng vào nên chỉ việc hỏi người tạo để bt có bản mới chx🐧"})
+
+local DRTab = Window:CreateTab("Dead Rails", 122874126897828) -- Title, Image
+local Section = DRTab:CreateSection("Tất cả script Dead Rails")
+
+local BFTab = Window:CreateTab("Blox fruit", 14450140891) -- Title, Image
+local Section = BFTab:CreateSection("Tất cả script Blox fruit")
+
+local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
+local Section = UITab:CreateSection("Thông tin update") 
+local Paragraph = UITab:CreateParagraph({Title = "v1", Content = "Script ra mắt và nhiều tính năng,hết🐧"})
+
+Rayfield:Notify({
+   Title = " Lời cảm ơn",
+   Content = "Cảm ơn đã dùng script của t",
+   Duration = 6.5,
+   Image = 4483362458,
+})
+
+Rayfield:Notify({
+   Title = "Tình trạng",
+   Content = "Script đã load thành công! ",
+   Duration = 5.5,
+   Image = 4483362458,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Speed Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "NoLag Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://rawscripts.net/raw/Grow-a-Garden-NoLag-Hub-no-key-38699"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "kura Hub script",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/checkurasshole/Script/refs/heads/main/IQ'))();
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "OMG Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Omgshit/Scripts/main/MainLoader.lua"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Nat Hub Gag",
+   Callback = function()
+   loadstring(game:HttpGet("https://get.nathub.xyz/loader"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Ronix Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/7d8a2a1a9a562a403b52532e58a14065.lua"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Limit Hub script",
+   Callback = function()
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Luarmor_E.lua')))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Thanhub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/thantzy/thanhub/refs/heads/main/thanv1"))()
+   end,
+})
+
+--Dead rails
+local Button = DRTab:CreateButton({
+   Name = "Skull Hub",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/main/loader.lua'))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "NULL FIRE Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/InfernusScripts/Null-Fire/main/Loader"))("DingaScripts")
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "Rintaa Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/wefwef127382/DEADRAILS.github.io/refs/heads/main/mainringta.lua"))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "Nat Hub Dead rails",
+   Callback = function()
+   loadstring(game:HttpGet("https://get.nathub.xyz/loader"))()
+   end,
+})
+
+local Button = DFTab:CreateButton({
+   Name = "Alchemy hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://scripts.alchemyhub.xyz"))()
+   end,
+})
+
+local Button = DFTab:CreateButton({
+   Name = "Tora script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadRails"))()
+   end,
+})
+
+--Blox fruit
+local Button = BFTab:CreateButton({
+   Name = "Redz hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/Scripts/refs/heads/main/main.luau"))()
+   end,
+})
+
+local Button = BFTab:CreateButton({
+   Name = "Banana cat Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Chiriku2013/BananaCatHub/refs/heads/main/BananaCatHub.lua"))()
+   end,
+})
+
+local Button = BFTab:CreateButton({
+   Name = "Muxus Hub",
+   Callback = function()
+   getgenv().Team = "Pirates"
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/MuxusTL/BloxFruits/main/MuxusHub.lua"))()
+   end,
+})
+
+local Button = BFTab:CreateButton({
+   Name = "Maru Hub script",
+   Callback = function()
+   getgenv().Team = "Marines"
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/KimP/refs/heads/main/MaruHub"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "AndepzaiV2 script",
+   Callback = function()
+   loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Min gaming Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Min/refs/heads/main/MinXoE"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Astra Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Overgustx2/Main/refs/heads/main/BloxFruits_25.html"))()
+   end,
+})
