@@ -196,21 +196,21 @@ local Button = BFTab:CreateButton({
    end,
 })
 
-local Button = GAGTab:CreateButton({
+local Button = BFTab:CreateButton({
    Name = "AndepzaiV2 script",
    Callback = function()
    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))()
    end,
 })
 
-local Button = GAGTab:CreateButton({
+local Button = BFTab:CreateButton({
    Name = "Min gaming Hub",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Min/refs/heads/main/MinXoE"))()
    end,
 })
 
-local Button = GAGTab:CreateButton({
+local Button = BFTab:CreateButton({
    Name = "Astra Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/Overgustx2/Main/refs/heads/main/BloxFruits_25.html"))()
