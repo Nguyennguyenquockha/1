@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "Kha script | Script tổng hợp",
    Icon = 10670510697, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Update v1",
+   LoadingTitle = "Update v1.5",
    LoadingSubtitle = "by Sey_roblox",
    ShowText = "Gui script", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
@@ -41,6 +41,7 @@ local Window = Rayfield:CreateWindow({
 local GAGTab = Window:CreateTab("Grow a garden", 71106264262734) -- Title, Image
 local Section = GAGTab:CreateSection("Tất cả script grow a garden")
 local Paragraph = GAGTab:CreateParagraph({Title = "Thông Báo", Content = "Script đang trong giai đoạn thử nghiệm có thể sẽ update thêm hay khác vân vân, có thể sẽ thêm tính năng vào nên chỉ việc hỏi người tạo để bt có bản mới chx🐧"})
+local Paragraph = GAGTab:CreateParagraph({Title = "Thông Báo", Content = "Nếu ae muốn t thêm gì hãy báo t hoặc giúp t những script mới khác🐧🐧🐧"})
 
 local DRTab = Window:CreateTab("Dead Rails", 122874126897828) -- Title, Image
 local Section = DRTab:CreateSection("Tất cả script Dead Rails")
@@ -51,6 +52,7 @@ local Section = BLoxTab:CreateSection("Tất cả script Blox fruit")
 local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
 local Section = UITab:CreateSection("Thông tin update") 
 local Paragraph = UITab:CreateParagraph({Title = "v1", Content = "Script ra mắt và nhiều tính năng,hết🐧"})
+local Paragraph = UITab:CreateParagraph({Title = "v1.5", Content = "Thêm 8 script mới cho 3 tab. "})
 
 Rayfield:Notify({
    Title = " Lời cảm ơn",
