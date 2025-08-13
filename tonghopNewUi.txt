@@ -45,8 +45,8 @@ local Paragraph = GAGTab:CreateParagraph({Title = "Thông Báo", Content = "Scri
 local DRTab = Window:CreateTab("Dead Rails", 122874126897828) -- Title, Image
 local Section = DRTab:CreateSection("Tất cả script Dead Rails")
 
-local BFTab = Window:CreateTab("Blox fruit", 14450140891) -- Title, Image
-local Section = BFTab:CreateSection("Tất cả script Blox fruit")
+local BLoxTab = Window:CreateTab("Blox fruit", 14450140891) -- Title, Image
+local Section = BLoxTab:CreateSection("Tất cả script Blox fruit")
 
 local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
 local Section = UITab:CreateSection("Thông tin update") 
@@ -151,14 +151,14 @@ local Button = DRTab:CreateButton({
    end,
 })
 
-local Button = DFTab:CreateButton({
+local Button = DRTab:CreateButton({
    Name = "Alchemy hub script",
    Callback = function()
    loadstring(game:HttpGet("https://scripts.alchemyhub.xyz"))()
    end,
 })
 
-local Button = DFTab:CreateButton({
+local Button = DRTab:CreateButton({
    Name = "Tora script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadRails"))()
@@ -166,21 +166,21 @@ local Button = DFTab:CreateButton({
 })
 
 --Blox fruit
-local Button = BFTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "Redz hub",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/tlredz/Scripts/refs/heads/main/main.luau"))()
    end,
 })
 
-local Button = BFTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "Banana cat Hub",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/Chiriku2013/BananaCatHub/refs/heads/main/BananaCatHub.lua"))()
    end,
 })
 
-local Button = BFTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "Muxus Hub",
    Callback = function()
    getgenv().Team = "Pirates"
@@ -188,7 +188,7 @@ local Button = BFTab:CreateButton({
    end,
 })
 
-local Button = BFTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "Maru Hub script",
    Callback = function()
    getgenv().Team = "Marines"
@@ -196,21 +196,21 @@ local Button = BFTab:CreateButton({
    end,
 })
 
-local Button = BFTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "AndepzaiV2 script",
    Callback = function()
    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/85e904ae1ff30824c1aa007fc7324f8f.lua"))()
    end,
 })
 
-local Button = BFTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "Min gaming Hub",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/Min/refs/heads/main/MinXoE"))()
    end,
 })
 
-local Button = BFTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "Astra Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/Overgustx2/Main/refs/heads/main/BloxFruits_25.html"))()
