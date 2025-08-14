@@ -59,6 +59,9 @@ local INKTab = Window:CreateTab("Ink Game", 73799762771015) -- Title, Image
 local Section = INKTab:CreateSection("Tất cả script Ink Game")
 local Paragraph = INKTab:CreateParagraph({Title = "Thông báo", Content = "Vì 1 số ít script cập nhật bản mới nên sẽ ít"})
 
+local SBTab = Window:CreateTab("Slap battle", 125334717762061) -- Title, Image
+local Section = SBTab:CreateSection("Tất cả script Slap Battle")
+
 local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
 local Section = UITab:CreateSection("Thông tin update") 
 
@@ -214,6 +217,13 @@ local Button = DRTab:CreateButton({
    Name = "Nat Hub Dead rails",
    Callback = function()
    loadstring(game:HttpGet("https://get.nathub.xyz/loader"))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "Vehicle fly gui script",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/Vehicle%20Fly%20Gui'))()
    end,
 })
 
@@ -387,6 +397,13 @@ local Button = ATab:CreateButton({
 })
 
 local Button = ATab:CreateButton({
+   Name = "Vex Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/yoursvexyyy/VEX-OP/refs/heads/main/99%20nights%20in%20the%20forest"))()
+   end,
+})
+
+local Button = ATab:CreateButton({
    Name = "VoidWave Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", true))()
@@ -433,5 +450,47 @@ local Button = INKTab:CreateButton({
    Name = "EF Hub Script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/runningloss/Links/2932fcaffb89dc37a8a7aeac4ad086506de2db8c/gui.lua"))()
+   end,
+})
+
+local Button = SBTab:CreateButton({
+   Name = "Forge Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Skzuppy/forge-hub/main/loader.lua"))()
+   end,
+})
+
+local Button = SBTab:CreateButton({
+   Name = "Vinq Hub",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/vinqDevelops/erwwefqweqewqwe/refs/heads/main/lol.txt'))()
+   end,
+})
+
+local Button = SBTab:CreateButton({
+   Name = "GIANG HUB",
+   Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Giangplay/Slap_Battles/main/Slap_Battles.lua"))()
+   end,
+})
+
+local Button = SBTab:CreateButton({
+   Name = "Clude Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/CludeHub/Slap-Battles-Scripts/refs/heads/main/CludeHub"))()
+   end,
+})
+
+local Button = SBTab:CreateButton({
+   Name = "Master helper",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/Ekanite-a/Scripts/refs/heads/main/Slap%20battles/Mastery_helper.lua'))()
+   end,
+})
+
+local Button = SBTab:CreateButton({
+   Name = "SLAP BATTLE Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Scripter-Coder/Scripter-Coder/refs/heads/main/Slap%20Battles/Slap%20Battles%20Hub%20OP%20V.%203"))()
    end,
 })
