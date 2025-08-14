@@ -46,19 +46,22 @@ local Paragraph = GAGTab:CreateParagraph({Title = "Thông Báo", Content = "Nế
 local DRTab = Window:CreateTab("Dead Rails", 122874126897828) -- Title, Image
 local Section = DRTab:CreateSection("Tất cả script Dead Rails")
 
-local SABTab = Window:CreateTab("Steal a Brainrot", 122874126897828) -- Title, Image
+local SABTab = Window:CreateTab("Steal a Brainrot", 92697348840041) -- Title, Image
 local Section = SABTab:CreateSection("Tất cả script Steal a Brainrot")
 
 local BLoxTab = Window:CreateTab("Blox fruit", 14450140891) -- Title, Image
 local Section = BLoxTab:CreateSection("Tất cả script Blox fruit")
 
-local 99Tab = Window:CreateTab("99 ngày trong tầng hầm", 14450140891) -- Title, Image
-local Section = 99Tab:CreateSection("Tất cả script 99 day in the forest")
+local ATab = Window:CreateTab("99 ngày trong rừng", 125334717762061) -- Title, Image
+local Section = ATab:CreateSection("Tất cả script 99 day in the forest")
 
 local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
 local Section = UITab:CreateSection("Thông tin update") 
+
 local Paragraph = UITab:CreateParagraph({Title = "v1", Content = "Script ra mắt và nhiều tính năng,hết🐧"})
+
 local Paragraph = UITab:CreateParagraph({Title = "v1.5", Content = "Thêm 8 script mới cho 3 tab. "})
+
 local Paragraph = UITab:CreateParagraph({Title = "v2", Content = "Thêm 2 tab mới là Steal a brainrot và 99 ngày trong rừng và cách tính năng ở 2 tab mới"})
 
 Rayfield:Notify({
@@ -227,42 +230,42 @@ local Button = BLoxTab:CreateButton({
 })
 
 --SAT
-local Button = SATTab:CreateButton({
+local Button = SABTab:CreateButton({
    Name = "Cobra Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/705e9a93cc18214fb77ab95686a8dba9.lua"))()
    end,
 })
 
-local Button = SATTab:CreateButton({
+local Button = SABTab:CreateButton({
    Name = " lurk V4 script",
    Callback = function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/egor2078f/lurkhackv4/refs/heads/main/main.lua", true))()
    end,
 })
 
-local Button = SATTab:CreateButton({
+local Button = SABTab:CreateButton({
    Name = " PusarX Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/Estevansit0/KJJK/refs/heads/main/PusarX-loader.lua"))() 
    end,
 })
 
-local Button = SATTab:CreateButton({
+local Button = SABTab:CreateButton({
    Name = " Strawberry cat Hub",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/shinichi-dz/phucshinsayhi/refs/heads/main/StealABrainrot.lua"))()
    end,
 })
 
-local Button = SATTab:CreateButton({
+local Button = SABTab:CreateButton({
    Name = "Y Hub script",
    Callback = function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/yue-os/script/refs/heads/main/Y-Hub"))()
    end,
 })
 
-local Button = SATTab:CreateButton({
+local Button = SABTab:CreateButton({
    Name = "Rintaa Hub Steal a brainrot",
    Callback = function()
    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/4dfd8f97b48ec9c81706cb36a3f382d8.lua"))()
@@ -270,28 +273,28 @@ local Button = SATTab:CreateButton({
 })
 
 --99 day in the forest
-local Button = 99Tab:CreateButton({
+local Button = ATab:CreateButton({
    Name = "Rubu hub",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/fakekuri/Rubu-Hub/main/Rubu99daysintheforest.lua"))()
    end,
 })
 
-local Button = 99Tab:CreateButton({
+local Button = ATab:CreateButton({
    Name = "Speed Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
    end,
 })
 
-local Button = 99Tab:CreateButton({
+local Button = ATab:CreateButton({
    Name = "H4xScripts",
    Callback = function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/H4xScripts/Loader/refs/heads/main/loader.lua", true))()    
    end,
 })
 
-local Button = 99Tab:CreateButton({
+local Button = ATab:CreateButton({
    Name = "Hutao Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/SLK-gaming/Hutao-Hub/refs/heads/main/99-Nights-In-The-Forest.txt"))()
