@@ -55,7 +55,7 @@ local Section = BLoxTab:CreateSection("Tất cả script Blox fruit")
 local ATab = Window:CreateTab("99 ngày trong rừng", 125334717762061) -- Title, Image
 local Section = ATab:CreateSection("Tất cả script 99 day in the forest")
 
-local INKTab = Window:CreateTab("Ink Game", 125334717762061) -- Title, Image
+local INKTab = Window:CreateTab("Ink Game", 73799762771015) -- Title, Image
 local Section = INKTab:CreateSection("Tất cả script Ink Game")
 local Paragraph = INKTab:CreateParagraph({Title = "Thông báo", Content = "Vì 1 số ít script cập nhật bản mới nên sẽ ít"})
 
@@ -399,6 +399,13 @@ local Button = INKTab:CreateButton({
    Name = "Revive Hub script",
    Callback = function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Have3165/Reviv3-Hub/refs/heads/main/InkGame'))()
+   end,
+})
+
+local Button = INKTab:CreateButton({
+   Name = "EF Hub Script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/runningloss/Links/2932fcaffb89dc37a8a7aeac4ad086506de2db8c/gui.lua"))()
    end,
 })
 
