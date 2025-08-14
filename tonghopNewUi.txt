@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Update 3.5",
    LoadingSubtitle = "by Sey_roblox",
    ShowText = "Gui script", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Serenity", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
    ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
 
@@ -247,6 +247,34 @@ local Button = DRTab:CreateButton({
    Name = "Tbao Hub script",
    Callback = function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/thaibao/refs/heads/main/TbaoHubDeadRails"))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "Lunor Hub script",
+   Callback = function()
+   loadstring(game:HttpGet('https://lunor.dev/loader'))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "Pink hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/ScriptBeLike/Tera-DeadRails/refs/heads/main/Meteor%20V1"))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "S7 Hub script",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/SevenIsYouScripts/Main/refs/heads/main/Auto%20Bonds%20Script'))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "Speed Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/AhmadV99/Speed-Hub-X/main/Speed%20Hub%20X.lua", true))()
    end,
 })
 
