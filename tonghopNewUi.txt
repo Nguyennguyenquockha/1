@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "Kha script | Script tổng hợp",
    Icon = 10670510697, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Update 2",
+   LoadingTitle = "Update 3.2",
    LoadingSubtitle = "by Sey_roblox",
    ShowText = "Gui script", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
@@ -70,10 +70,37 @@ local Paragraph = UITab:CreateParagraph({Title = "v2", Content = "Thêm 2 tab m�
 
 local Paragraph = UITab:CreateParagraph({Title = "v3", Content = "Thêm 1 tab mới là Ink game và thêm 1 số script hub khác cho các tab"})
 
+local Paragraph = UITab:CreateParagraph({Title = "v3.2", Content = "Thêm 1 thông báo thông tin người chơi và fix lỗi load thiếu tính năng"})
+
 Rayfield:Notify({
    Title = " Lời cảm ơn",
    Content = "Cảm ơn đã dùng script của t",
    Duration = 6.5,
+   Image = 4483362458,
+})
+
+-- Lấy dịch vụ Roblox
+local Players = game:GetService("Players")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+-- Lấy tên người chơi
+local playerName = Players.LocalPlayer.Name
+
+-- Lấy ngày hiện tại
+local currentDate = os.date("%d/%m/%Y")
+
+-- Lấy tên game
+local gameName = "Đang tải..."
+pcall(function()
+    local info = MarketplaceService:GetProductInfo(game.PlaceId)
+    gameName = info.Name
+end)
+
+-- Thông báo
+Rayfield:Notify({
+   Title = "Thông tin người chơi",
+   Content = "Tên: " .. playerName .. "\nNgày dùng script: " .. currentDate .. "\nTên game: " .. gameName,
+   Duration = 5.5,
    Image = 4483362458,
 })
 
@@ -263,7 +290,7 @@ local Button = BLoxTab:CreateButton({
    end,
 })
 
-local Button = BloxTab:CreateButton({
+local Button = BLoxTab:CreateButton({
    Name = "W azure Hub script",
    Callback = function()
    getgenv().Team = "Pirates"
@@ -408,7 +435,3 @@ local Button = INKTab:CreateButton({
    loadstring(game:HttpGet("https://raw.githubusercontent.com/runningloss/Links/2932fcaffb89dc37a8a7aeac4ad086506de2db8c/gui.lua"))()
    end,
 })
-
-Mục tiêu chính:
-thêm tab❌
-thêm script khác✅
