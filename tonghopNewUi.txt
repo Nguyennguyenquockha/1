@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    LoadingTitle = "Update 3.5",
    LoadingSubtitle = "by Sey_roblox",
    ShowText = "Gui script", -- for mobile users to unhide rayfield, change if you'd like
-   Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+   Theme = "Serenity", -- Check https://docs.sirius.menu/rayfield/configuration/themes
 
    ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
 
@@ -74,6 +74,8 @@ local Paragraph = UITab:CreateParagraph({Title = "v2", Content = "Thêm 2 tab m�
 local Paragraph = UITab:CreateParagraph({Title = "v3", Content = "Thêm 1 tab mới là Ink game và thêm 1 số script hub khác cho các tab"})
 
 local Paragraph = UITab:CreateParagraph({Title = "v3.2", Content = "Thêm 1 thông báo thông tin người chơi và fix lỗi load thiếu tính năng"})
+
+local Paragraph = UITab:CreateParagraph({Title = "v3.5", Content = "Thêm 1 tab ,thêm thức khác, fix lỗi"})
 
 Rayfield:Notify({
    Title = " Lời cảm ơn",
@@ -466,6 +468,8 @@ local Button = INKTab:CreateButton({
    loadstring(game:HttpGet("https://raw.githubusercontent.com/runningloss/Links/2932fcaffb89dc37a8a7aeac4ad086506de2db8c/gui.lua"))()
    end,
 })
+
+local Label = SBTab:CreateLabel("Vì script ko đc update thường xuyên khi game update nên sẽ thiếu chi tiết, sai sót và bug", 12487510294, Color3.fromRGB(255, 106, 106), false)
 
 local Button = SBTab:CreateButton({
    Name = "Forge Hub",
