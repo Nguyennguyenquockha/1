@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "Kha script | Script tổng hợp",
    Icon = 10670510697, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Update 3.2",
+   LoadingTitle = "Update 3.5",
    LoadingSubtitle = "by Sey_roblox",
    ShowText = "Gui script", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
@@ -59,7 +59,7 @@ local INKTab = Window:CreateTab("Ink Game", 73799762771015) -- Title, Image
 local Section = INKTab:CreateSection("Tất cả script Ink Game")
 local Paragraph = INKTab:CreateParagraph({Title = "Thông báo", Content = "Vì 1 số ít script cập nhật bản mới nên sẽ ít"})
 
-local SBTab = Window:CreateTab("Slap battle", 125334717762061) -- Title, Image
+local SBTab = Window:CreateTab("Slap battle", 16618270886) -- Title, Image
 local Section = SBTab:CreateSection("Tất cả script Slap Battle")
 
 local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
@@ -294,7 +294,7 @@ local Button = BLoxTab:CreateButton({
 })
 
 local Button = BLoxTab:CreateButton({
-   Name = "Astra Hub script",
+   Name = "Astral Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/Overgustx2/Main/refs/heads/main/BloxFruits_25.html"))()
    end,
@@ -407,6 +407,20 @@ local Button = ATab:CreateButton({
    Name = "VoidWave Hub script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", true))()
+   end,
+})
+
+local Button = ATab:CreateButton({
+   Name = "KDML SCRIPTS",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/kedd063/KdmlScripts/refs/heads/main/99-Night-İn-The-Forest"))()
+   end,
+})
+
+local Button = ATab:CreateButton({
+   Name = " Project Arvotheon script (Beta) ",
+   Callback = function()
+   loadstring(game:HttpGet("https://get-arvotheon-ontop.netlify.app/Loader.lua"))()
    end,
 })
 
