@@ -55,6 +55,10 @@ local Section = BLoxTab:CreateSection("Tất cả script Blox fruit")
 local ATab = Window:CreateTab("99 ngày trong rừng", 125334717762061) -- Title, Image
 local Section = ATab:CreateSection("Tất cả script 99 day in the forest")
 
+local INKTab = Window:CreateTab("Ink Game", 125334717762061) -- Title, Image
+local Section = INKTab:CreateSection("Tất cả script Ink Game")
+local Paragraph = INKTab:CreateParagraph({Title = "Thông báo", Content = "Vì 1 số ít script cập nhật bản mới nên sẽ ít"})
+
 local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
 local Section = UITab:CreateSection("Thông tin update") 
 
@@ -63,6 +67,8 @@ local Paragraph = UITab:CreateParagraph({Title = "v1", Content = "Script ra mắ
 local Paragraph = UITab:CreateParagraph({Title = "v1.5", Content = "Thêm 8 script mới cho 3 tab. "})
 
 local Paragraph = UITab:CreateParagraph({Title = "v2", Content = "Thêm 2 tab mới là Steal a brainrot và 99 ngày trong rừng và cách tính năng ở 2 tab mới"})
+
+local Paragraph = UITab:CreateParagraph({Title = "v3", Content = "Thêm 1 tab mới là Ink game và thêm 1 số script hub khác cho các tab"})
 
 Rayfield:Notify({
    Title = " Lời cảm ơn",
@@ -107,6 +113,20 @@ local Button = GAGTab:CreateButton({
 })
 
 local Button = GAGTab:CreateButton({
+   Name = "Kiwii Hub script",
+   Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/KiwiiHub/KiwiiHub/refs/heads/main/aac03d64-6a28-47bc-ab5c-da025a50c4d6-1182317416202641449.lua"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
+   Name = "Tbao Hub script",
+   Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/game/refs/heads/main/TbaoHubGrowGarden"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
    Name = "Nat Hub Gag",
    Callback = function()
    loadstring(game:HttpGet("https://get.nathub.xyz/loader"))()
@@ -121,9 +141,16 @@ local Button = GAGTab:CreateButton({
 })
 
 local Button = GAGTab:CreateButton({
+   Name = "FFJ Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/FFJ1/Roblox-Exploits/main/scripts/Loader.lua"))()
+   end,
+})
+
+local Button = GAGTab:CreateButton({
    Name = "Limit Hub script",
    Callback = function()
-loadstring(game:HttpGet(('https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Luarmor_E.lua')))()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Luarmor_E.lua')))()
    end,
 })
 
@@ -174,6 +201,13 @@ local Button = DRTab:CreateButton({
    Name = "Tora script",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/gumanba/Scripts/main/DeadRails"))()
+   end,
+})
+
+local Button = DRTab:CreateButton({
+   Name = "Tbao Hub script",
+   Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/tbao143/thaibao/refs/heads/main/TbaoHubDeadRails"))()
    end,
 })
 
@@ -229,6 +263,16 @@ local Button = BLoxTab:CreateButton({
    end,
 })
 
+local Button = BloxTab:CreateButton({
+   Name = "W azure Hub script",
+   Callback = function()
+   getgenv().Team = "Pirates"
+   getgenv().FixCrash = false -- Turn it On For Hopping Server, Improve Performance But Silent Aim On Mob And Player
+   getgenv().FixCrash2 = false -- Turn it On For Hopping Server, Improve Performance But Will Remove Speed Changer
+   loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc6104dabe8e19562e5cc2.lua"))()
+   end,
+})
+
 --SAT
 local Button = SABTab:CreateButton({
    Name = "Cobra Hub script",
@@ -262,6 +306,13 @@ local Button = SABTab:CreateButton({
    Name = "Y Hub script",
    Callback = function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/yue-os/script/refs/heads/main/Y-Hub"))()
+   end,
+})
+
+local Button = SABTab:CreateButton({
+   Name = "Lemon Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/ffdfeadf0af798741806ea404682a938.lua"))()
    end,
 })
 
@@ -300,3 +351,57 @@ local Button = ATab:CreateButton({
    loadstring(game:HttpGet("https://raw.githubusercontent.com/SLK-gaming/Hutao-Hub/refs/heads/main/99-Nights-In-The-Forest.txt"))()
    end,
 })
+
+local Button = ATab:CreateButton({
+   Name = "Goa Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Nevcit/GOA_HUB/refs/heads/main/99%20Nights%20In%20The%20Forest"))()
+   end,
+})
+
+local Button = ATab:CreateButton({
+   Name = "VoidWave Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/nightsintheforest.lua", true))()
+   end,
+})
+
+--Ink game
+local Button = INKTab:CreateButton({
+   Name = "Azure Hub script",
+   Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ScripterVaz/InkGameAzure/main/Protected_7974105512464815.lua.txt"))()
+   end,
+})
+
+local Button = INKTab:CreateButton({
+   Name = "Rintaa script (Ink game)",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/wefwef127382/inkgames.github.io/refs/heads/main/ringta.lua"))()
+   end,
+})
+
+local Button = INKTab:CreateButton({
+   Name = "Voidware Hub",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VW-Add/main/inkgame.lua", true))()
+   end,
+})
+
+local Button = INKTab:CreateButton({
+   Name = "Siff Hub script",
+   Callback = function()
+    loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/284c7c5eb4a430a82162018c617e9aa0.lua"))()
+   end,
+})
+
+local Button = INKTab:CreateButton({
+   Name = "Revive Hub script",
+   Callback = function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/Have3165/Reviv3-Hub/refs/heads/main/InkGame'))()
+   end,
+})
+
+Mục tiêu chính:
+thêm tab❌
+thêm script khác✅
