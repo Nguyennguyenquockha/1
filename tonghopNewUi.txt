@@ -3,7 +3,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
    Name = "Kha script | Script tổng hợp",
    Icon = 10670510697, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
-   LoadingTitle = "Update 3.5",
+   LoadingTitle = "Update 4",
    LoadingSubtitle = "by Sey_roblox",
    ShowText = "Gui script", -- for mobile users to unhide rayfield, change if you'd like
    Theme = "Ocean", -- Check https://docs.sirius.menu/rayfield/configuration/themes
@@ -62,6 +62,12 @@ local Paragraph = INKTab:CreateParagraph({Title = "Thông báo", Content = "Vì 
 local SBTab = Window:CreateTab("Slap battle", 16618270886) -- Title, Image
 local Section = SBTab:CreateSection("Tất cả script Slap Battle")
 
+local FKTab = Window:CreateTab("Forsaken", 4483362458) -- Title, Image
+local Section = FKTab:CreateSection("Tất cả script Forsaken")
+
+local OTTab = Window:CreateTab(" Khác", "menu") -- Title, Image
+local Section = OTTab:CreateSection("Tất cả script Phụ")
+
 local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
 local Section = UITab:CreateSection("Thông tin update") 
 
@@ -76,6 +82,9 @@ local Paragraph = UITab:CreateParagraph({Title = "v3", Content = "Thêm 1 tab m�
 local Paragraph = UITab:CreateParagraph({Title = "v3.2", Content = "Thêm 1 thông báo thông tin người chơi và fix lỗi load thiếu tính năng"})
 
 local Paragraph = UITab:CreateParagraph({Title = "v3.5", Content = "Thêm 1 tab ,thêm thức khác, fix lỗi"})
+
+local Paragraph = UITab:CreateParagraph({Title = "v4", Content = "Thêm 2 Tab mới ,thêm thức khác (Còn tiếp...
+)"})
 
 Rayfield:Notify({
    Title = " Lời cảm ơn",
@@ -331,6 +340,13 @@ local Button = BLoxTab:CreateButton({
 })
 
 local Button = BLoxTab:CreateButton({
+   Name = "Vxeze Hub script",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/Dex-Bear/Vxezehub/refs/heads/main/VxezeHubMain"))()
+   end,
+})
+
+local Button = BLoxTab:CreateButton({
    Name = "W azure Hub script",
    Callback = function()
    getgenv().Team = "Pirates"
@@ -538,5 +554,68 @@ local Button = SBTab:CreateButton({
    Name = "SLAP BATTLE Hub",
    Callback = function()
    loadstring(game:HttpGet("https://raw.githubusercontent.com/Scripter-Coder/Scripter-Coder/refs/heads/main/Slap%20Battles/Slap%20Battles%20Hub%20OP%20V.%203"))()
+   end,
+})
+
+local Button = OTTab:CreateButton({
+   Name = "Infinite yield",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+   end,
+})
+
+local Button = OTTab:CreateButton({
+   Name = "Fly Gui V3",
+   Callback = function()
+   loadstring(game:HttpGet("https://raw.githubusercontent.com/XNEOFF/FlyGuiV3/main/FlyGuiV3.txt"))()
+   end,
+})
+
+local Button = OTTab:CreateButton({
+   Name = "Boost Fps",
+   Callback = function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/vexroxd/My-Script-/main/roblox%20fps%20unlocker%20script.lua"))()
+   end,
+})
+
+local Button = OTTab:CreateButton({
+   Name = "Npc Lock",
+   Callback = function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/Kha-hub/refs/heads/main/Chuly.txt'))()
+   end,
+})
+
+OTTab:CreateToggle({
+    Name = "Full Bright",
+    CurrentValue = false,
+    Callback = function(Value)
+        fullbrightEnabled = Value
+        if Value then
+            oldLightingSettings.Brightness = Lighting.Brightness
+            oldLightingSettings.ClockTime = Lighting.ClockTime
+            oldLightingSettings.FogEnd = Lighting.FogEnd
+            oldLightingSettings.GlobalShadows = Lighting.GlobalShadows
+            oldLightingSettings.OutdoorAmbient = Lighting.OutdoorAmbient
+
+            fullbrightLoop = game:GetService("RunService").RenderStepped:Connect(function()
+                Lighting.Brightness = 2
+                Lighting.ClockTime = 14
+                Lighting.FogEnd = 100000
+                Lighting.GlobalShadows = false
+                Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+            end)
+        else
+            if fullbrightLoop then fullbrightLoop:Disconnect() end
+            for setting, value in pairs(oldLightingSettings) do
+                Lighting[setting] = value
+            end
+        end
+    end,
+})
+
+local Button = OTTab:CreateButton({
+   Name = "Aimbot player",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/Ch.txt'))()
    end,
 })

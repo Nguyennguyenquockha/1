@@ -1,131 +1,139 @@
+-- Xóa intro cũ nếu có
 if game:GetService("CoreGui"):FindFirstChild("IntroGui") then
     game:GetService("CoreGui").IntroGui:Destroy()
 end
 
-if _G.BoostSpeedScriptLoaded then return end
-_G.BoostSpeedScriptLoaded = true
-
-local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
-local player = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
 
--- GUI
-local gui = Instance.new("ScreenGui", game.CoreGui)
-gui.Name = "IntroGui"
-gui.IgnoreGuiInset = true
-gui.ResetOnSpawn = false
+-- ScreenGui
+local introGui = Instance.new("ScreenGui")
+introGui.Name = "IntroGui"
+introGui.Parent = CoreGui
+introGui.IgnoreGuiInset = true
+introGui.ResetOnSpawn = false
 
--- Nền
-local bg = Instance.new("ImageLabel", gui)
-bg.Size = UDim2.new(1, 0, 1, 0)
-bg.BackgroundTransparency = 0.6
-bg.Image = "rbxassetid://138057999099280"
-bg.ImageTransparency = 0.2
+-- Nền mờ
+local background = Instance.new("Frame")
+background.Size = UDim2.new(1, 0, 1, 0)
+background.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+background.BackgroundTransparency = 0.4
+background.BorderSizePixel = 0
+background.Parent = introGui
 
--- Hiệu ứng mờ nền
-local blur = Instance.new("BlurEffect", game.Lighting)
-blur.Size = 14
+-- Tiêu đề
+local textLabel = Instance.new("TextLabel")
+textLabel.Size = UDim2.new(1, 0, 0, 120)
+textLabel.Position = UDim2.new(0, 0, 0.38, 0)
+textLabel.BackgroundTransparency = 1
+textLabel.Font = Enum.Font.GothamBold
+textLabel.TextSize = 90
+textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+textLabel.TextStrokeTransparency = 0
+textLabel.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+textLabel.Text = ""
+textLabel.Parent = introGui
 
--- Logo
-local logo = Instance.new("ImageLabel", gui)
-logo.Size = UDim2.new(0, 120, 0, 120)
-logo.Position = UDim2.new(0.5, -60, 0.35, -60)
-logo.BackgroundTransparency = 1
-logo.Image = "rbxassetid://138057999099280"
-logo.ScaleType = Enum.ScaleType.Fit
-logo.ImageTransparency = 1
-TweenService:Create(logo, TweenInfo.new(1.5, Enum.EasingStyle.Quad), {ImageTransparency = 0}):Play()
+-- Gradient
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 102, 204)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(135, 206, 250))
+}
+gradient.Parent = textLabel
 
--- Chữ KHA HUB
-local fullText = "KHA HUB"
-local spacing = 54 -- khoảng cách giữa các chữ
-local totalWidth = (#fullText * spacing) - (spacing - 60)
-local textHolder = Instance.new("Frame", gui)
-textHolder.BackgroundTransparency = 1
-textHolder.Size = UDim2.new(0, totalWidth, 0, 100)
-textHolder.Position = UDim2.new(0.5, -totalWidth/2, 0.5, -50)
+-- Glow chữ
+local glow = Instance.new("UIStroke")
+glow.Thickness = 2
+glow.Color = Color3.fromRGB(255, 255, 255)
+glow.Transparency = 0.6
+glow.Parent = textLabel
 
-local function createLetter(char, i)
-	local label = Instance.new("TextLabel", textHolder)
-	label.Text = char
-	label.Size = UDim2.new(0, 60, 0, 70)
-	label.Position = UDim2.new(0, (i - 1) * spacing, 0, 0)
-	label.BackgroundTransparency = 1
-	label.TextScaled = true
-	label.Font = Enum.Font.FredokaOne
-	label.TextColor3 = Color3.fromHSV(i / #fullText, 0.9, 1)
-	label.TextTransparency = 1
+-- Loading label
+local loadingLabel = Instance.new("TextLabel")
+loadingLabel.Size = UDim2.new(0, 200, 0, 20)
+loadingLabel.Position = UDim2.new(0.5, -100, 1, -120)
+loadingLabel.BackgroundTransparency = 1
+loadingLabel.Font = Enum.Font.GothamSemibold
+loadingLabel.TextSize = 20
+loadingLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+loadingLabel.Text = "Loading... 0.0%"
+loadingLabel.Parent = introGui
 
-	-- Bóng đổ
-	local stroke = Instance.new("UIStroke", label)
-	stroke.Thickness = 2
-	stroke.Color = Color3.fromRGB(0, 0, 0)
+-- Nền loading
+local loadingBackground = Instance.new("Frame")
+loadingBackground.Size = UDim2.new(0, 320, 0, 20)
+loadingBackground.Position = UDim2.new(0.5, -160, 1, -80)
+loadingBackground.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+loadingBackground.BorderSizePixel = 0
+loadingBackground.Parent = introGui
 
-	-- Glow nhẹ 3D
-	for g = 1, 2 do
-		local glow = label:Clone()
-		glow.TextTransparency = 0.75
-		glow.TextColor3 = Color3.fromRGB(255, 255, 255)
-		glow.Position = label.Position + UDim2.new(0, g, 0, g)
-		glow.ZIndex = label.ZIndex - 1
-		glow.Parent = textHolder
-	end
+local bgCorner = Instance.new("UICorner")
+bgCorner.CornerRadius = UDim.new(1, 0)
+bgCorner.Parent = loadingBackground
 
-	-- Hiệu ứng xuất hiện mượt hơn
-	local appear = TweenService:Create(label, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, (i * 0.15)), {
-		TextTransparency = 0,
-		Size = UDim2.new(0, 65, 0, 75)
-	})
-	appear:Play()
+-- Thanh loading
+local loadingBar = Instance.new("Frame")
+loadingBar.Size = UDim2.new(0, 0, 1, 0)
+loadingBar.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+loadingBar.BorderSizePixel = 0
+loadingBar.Parent = loadingBackground
 
-	-- Shimmer đổi màu liên tục
-	task.spawn(function()
-		while gui and gui.Parent do
-			local h, s, v = Color3.toHSV(label.TextColor3)
-			label.TextColor3 = Color3.fromHSV((tick() * 0.5 + i / 5) % 1, s, v)
-			task.wait(0.05)
-		end
-	end)
-end
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(1, 0)
+barCorner.Parent = loadingBar
 
+-- Typing effect
+local fullText = "KHA HUB SCRIPT"
 for i = 1, #fullText do
-	createLetter(fullText:sub(i, i), i)
+    textLabel.Text = string.sub(fullText, 1, i)
+    task.wait(0.1)
 end
 
--- Text "ĐANG KIỂM TRA..." (gõ + fade in từng ký tự)
-local checkingText = Instance.new("TextLabel", gui)
-checkingText.Size = UDim2.new(1, 0, 0, 50)
-checkingText.Position = UDim2.new(0, 0, 0.65, 0)
-checkingText.BackgroundTransparency = 1
-checkingText.Text = ""
-checkingText.TextColor3 = Color3.fromRGB(255, 255, 255)
-checkingText.TextScaled = true
-checkingText.Font = Enum.Font.FredokaOne
-checkingText.TextTransparency = 0
-local stroke2 = Instance.new("UIStroke", checkingText)
-stroke2.Thickness = 1.5
-stroke2.Color = Color3.fromRGB(0, 0, 0)
+-- Thời gian loading lâu hơn
+local totalTime = 6
+local startTime = tick()
 
--- Gõ chậm + fade in từng ký tự
+-- Tween loading bar
+local tween = TweenService:Create(loadingBar, TweenInfo.new(totalTime, Enum.EasingStyle.Linear), {
+    Size = UDim2.new(1, 0, 1, 0)
+})
+tween:Play()
+
+-- Cập nhật % mượt (thập phân 1 chữ số)
+RunService.RenderStepped:Connect(function()
+    local elapsed = tick() - startTime
+    local percent = math.clamp((elapsed / totalTime) * 100, 0, 100)
+    loadingLabel.Text = string.format("Loading... %.1f%%", percent)
+end)
+
+-- Hiệu ứng nhấp nhô cực nhẹ
 task.spawn(function()
-	local msg = "ĐANG KIỂM TRA..."
-	for i = 1, #msg do
-		checkingText.Text = msg:sub(1, i)
-		checkingText.TextTransparency = 1
-		TweenService:Create(checkingText, TweenInfo.new(0.2), {TextTransparency = 0}):Play()
-		task.wait(0.12) -- tốc độ gõ
-	end
+    while tick() - startTime < totalTime do
+        TweenService:Create(loadingBackground, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, -160, 1, -79)
+        }):Play()
+        task.wait(0.4)
+        TweenService:Create(loadingBackground, TweenInfo.new(0.4, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {
+            Position = UDim2.new(0.5, -160, 1, -81)
+        }):Play()
+        task.wait(0.4)
+    end
 end)
 
--- Fade in toàn GUI
-gui.Enabled = false
-task.delay(0.1, function()
-	gui.Enabled = true
-end)
+-- Kết thúc
+task.wait(totalTime)
+TweenService:Create(background, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+TweenService:Create(textLabel, TweenInfo.new(0.3), {TextTransparency = 1, TextStrokeTransparency = 1}):Play()
+TweenService:Create(glow, TweenInfo.new(0.3), {Transparency = 1}):Play()
+TweenService:Create(loadingLabel, TweenInfo.new(0.3), {TextTransparency = 1}):Play()
+TweenService:Create(loadingBackground, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
+TweenService:Create(loadingBar, TweenInfo.new(0.3), {BackgroundTransparency = 1}):Play()
 
--- Load script chính sau 3.5 giây (dài hơn để đủ xem intro)
-task.delay(3.5, function()
-	if gui then gui:Destroy() end
-	if blur then blur:Destroy() end
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/tonghopNewUi.txt"))()
-end)
+task.wait(0.35)
+introGui:Destroy()
+
+-- Chạy script chính
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Nguyennguyenquockha/1/refs/heads/main/tonghopNewUi.txt"))()
