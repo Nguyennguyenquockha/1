@@ -40,7 +40,6 @@ local Window = Rayfield:CreateWindow({
 --Danh sách các tab
 local GAGTab = Window:CreateTab("Grow a garden", 71106264262734) -- Title, Image
 local Section = GAGTab:CreateSection("Tất cả script grow a garden")
-local Paragraph = GAGTab:CreateParagraph({Title = "Thông Báo", Content = "Script đang trong giai đoạn thử nghiệm có thể sẽ update thêm hay khác vân vân, có thể sẽ thêm tính năng vào nên chỉ việc hỏi người tạo để bt có bản mới chx🐧"})
 local Paragraph = GAGTab:CreateParagraph({Title = "Thông Báo", Content = "Nếu ae muốn t thêm gì hãy báo t hoặc giúp t những script mới khác🐧🐧🐧"})
 
 local DRTab = Window:CreateTab("Dead Rails", 122874126897828) -- Title, Image
@@ -62,29 +61,8 @@ local Paragraph = INKTab:CreateParagraph({Title = "Thông báo", Content = "Vì 
 local SBTab = Window:CreateTab("Slap battle", 16618270886) -- Title, Image
 local Section = SBTab:CreateSection("Tất cả script Slap Battle")
 
-local FKTab = Window:CreateTab("Forsaken", 4483362458) -- Title, Image
-local Section = FKTab:CreateSection("Tất cả script Forsaken")
-
 local OTTab = Window:CreateTab(" Khác", "menu") -- Title, Image
 local Section = OTTab:CreateSection("Tất cả script Phụ")
-
-local UITab = Window:CreateTab("Update info", 4483362458) -- Title, Image
-local Section = UITab:CreateSection("Thông tin update") 
-
-local Paragraph = UITab:CreateParagraph({Title = "v1", Content = "Script ra mắt và nhiều tính năng,hết🐧"})
-
-local Paragraph = UITab:CreateParagraph({Title = "v1.5", Content = "Thêm 8 script mới cho 3 tab. "})
-
-local Paragraph = UITab:CreateParagraph({Title = "v2", Content = "Thêm 2 tab mới là Steal a brainrot và 99 ngày trong rừng và cách tính năng ở 2 tab mới"})
-
-local Paragraph = UITab:CreateParagraph({Title = "v3", Content = "Thêm 1 tab mới là Ink game và thêm 1 số script hub khác cho các tab"})
-
-local Paragraph = UITab:CreateParagraph({Title = "v3.2", Content = "Thêm 1 thông báo thông tin người chơi và fix lỗi load thiếu tính năng"})
-
-local Paragraph = UITab:CreateParagraph({Title = "v3.5", Content = "Thêm 1 tab ,thêm thức khác, fix lỗi"})
-
-local Paragraph = UITab:CreateParagraph({Title = "v4", Content = "Thêm 2 Tab mới ,thêm thức khác (Còn tiếp...
-)"})
 
 Rayfield:Notify({
    Title = " Lời cảm ơn",
@@ -583,34 +561,6 @@ local Button = OTTab:CreateButton({
    Callback = function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/Nguyennguyenquockha/Kha-hub/refs/heads/main/Chuly.txt'))()
    end,
-})
-
-OTTab:CreateToggle({
-    Name = "Full Bright",
-    CurrentValue = false,
-    Callback = function(Value)
-        fullbrightEnabled = Value
-        if Value then
-            oldLightingSettings.Brightness = Lighting.Brightness
-            oldLightingSettings.ClockTime = Lighting.ClockTime
-            oldLightingSettings.FogEnd = Lighting.FogEnd
-            oldLightingSettings.GlobalShadows = Lighting.GlobalShadows
-            oldLightingSettings.OutdoorAmbient = Lighting.OutdoorAmbient
-
-            fullbrightLoop = game:GetService("RunService").RenderStepped:Connect(function()
-                Lighting.Brightness = 2
-                Lighting.ClockTime = 14
-                Lighting.FogEnd = 100000
-                Lighting.GlobalShadows = false
-                Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
-            end)
-        else
-            if fullbrightLoop then fullbrightLoop:Disconnect() end
-            for setting, value in pairs(oldLightingSettings) do
-                Lighting[setting] = value
-            end
-        end
-    end,
 })
 
 local Button = OTTab:CreateButton({
